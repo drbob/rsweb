@@ -4,9 +4,12 @@
 #include <event.h>
 #include <event2/thread.h>
 #include <iostream>
-
+#include <locale>
+#include <boost/iostreams/detail/config/codecvt.hpp>
 #include "notifytxt.h"
 #include "raas_web.h"
+
+
 int main(int argc, char** argv) {
     RsInit::InitRsConfig();
     int initResult = RsInit::InitRetroShare(argc, argv);
@@ -71,9 +74,10 @@ int main(int argc, char** argv) {
     evthread_make_base_notifiable(evbase);
     evhttp* http_base = evhttp_new(evbase);
     evhttp_set_gencb(http_base, rsweb::queue_request, &thread_pool); 
-    evhttp_bind_socket(http_base, "0.0.0.0", 10101);
+    assert(evhttp_bind_socket(http_base, "0.0.0.0", 10101) == 0);
 
     event_base_dispatch(evbase);
+    thread_pool.wait();
     return 1;
 }
 
