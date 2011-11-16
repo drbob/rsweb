@@ -25,10 +25,53 @@
 
 
 #include "notifytxt.h"
-#include "rsiface/rspeers.h"
+#include <retroshare/rspeers.h>
+#include <string.h>
 
 #include <iostream>
 #include <sstream>
+
+#ifdef WINDOWS_SYS
+#include <conio.h>
+#include <stdio.h>
+
+#define PASS_MAX 512
+
+char *getpass (const char *prompt)
+{
+    static char getpassbuf [PASS_MAX + 1];
+    size_t i = 0;
+    int c;
+
+    if (prompt) {
+        fputs (prompt, stderr);
+        fflush (stderr);
+    }
+
+    for (;;) {
+        c = _getch ();
+        if (c == '\r') {
+            getpassbuf [i] = '\0';
+            break;
+        }
+        else if (i < PASS_MAX) {
+            getpassbuf[i++] = c;
+        }
+
+        if (i >= PASS_MAX) {
+            getpassbuf [i] = '\0';
+            break;
+        }
+    }
+
+    if (prompt) {
+        fputs ("\r\n", stderr);
+        fflush (stderr);
+    }
+
+    return getpassbuf;
+}
+#endif
 
 void NotifyTxt::notifyErrorMsg(int list, int type, std::string msg)
 {
@@ -40,20 +83,29 @@ void NotifyTxt::notifyChat()
 	return;
 }
 
+bool NotifyTxt::askForPassword(const std::string& key_details, bool prev_is_bad, std::string& password)
+{
+	char *passwd = getpass(("Please enter GPG password for key "+key_details+": ").c_str()) ;
+	password = passwd;
+
+	return !password.empty();
+}
+
+
 void NotifyTxt::notifyListChange(int list, int type)
 {
 	std::cerr << "NotifyTxt::notifyListChange()" << std::endl;
 	switch(list)
 	{
-		case NOTIFY_LIST_NEIGHBOURS:
-			displayNeighbours();
-			break;
+//		case NOTIFY_LIST_NEIGHBOURS:
+//			displayNeighbours();
+//			break;
 		case NOTIFY_LIST_FRIENDS:
 			displayFriends();
 			break;
-//		case NOTIFY_LIST_DIRLIST:
-//			displayDirectories();
-//			break;
+		case NOTIFY_LIST_DIRLIST_FRIENDS:
+			displayDirectories();
+			break;
 		case NOTIFY_LIST_SEARCHLIST:
 			displaySearch();
 			break;
@@ -71,18 +123,16 @@ void NotifyTxt::notifyListChange(int list, int type)
 	}
 	return;
 }
-
-			
 			
 void NotifyTxt::displayNeighbours()
 {
-	std::list<std::string> ids;
+	std::list<std::string> neighs;
 	std::list<std::string>::iterator it;
 
-	rsPeers->getOthersList(ids);
+	rsPeers->getGPGAllList(neighs);
 
 	std::ostringstream out;
-	for(it = ids.begin(); it != ids.end(); it++)
+	for(it = neighs.begin(); it != neighs.end(); it++)
 	{
 		RsPeerDetails detail;
 		rsPeers->getPeerDetails(*it, detail);

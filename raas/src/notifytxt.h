@@ -26,32 +26,33 @@
  */
 
 
-#include "rsiface/rsiface.h"
+#include <retroshare/rsiface.h>
 
 #include <string>
 
 class NotifyTxt: public NotifyBase
 {
-        public:
-        NotifyTxt() { return; }
-        virtual ~NotifyTxt() { return; }
-	void setRsIface(RsIface *i) { iface = i; }
+	public:
+		NotifyTxt() { return; }
+		virtual ~NotifyTxt() { return; }
+		void setRsIface(RsIface *i) { iface = i; }
 
-virtual void notifyListChange(int list, int type);
-virtual void notifyErrorMsg(int list, int sev, std::string msg);
-virtual void notifyChat();
+		virtual void notifyListChange(int list, int type);
+		virtual void notifyErrorMsg(int list, int sev, std::string msg);
+		virtual void notifyChat();
+		virtual bool askForPassword(const std::string& key_details, bool prev_is_bad, std::string& password);
 
 	private:
 
-	void displayNeighbours();
-	void displayFriends();
-	void displayDirectories();
-	void displaySearch();
-	void displayMessages();
-	void displayChannels();
-	void displayTransfers();
+		void displayNeighbours();
+		void displayFriends();
+		void displayDirectories();
+		void displaySearch();
+		void displayMessages();
+		void displayChannels();
+		void displayTransfers();
 
-	RsIface *iface; /* so we can get the data */
+		RsIface *iface; /* so we can get the data */
 };
 
 #endif

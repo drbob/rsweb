@@ -1,5 +1,5 @@
 bin_PROGRAMS = raas
 raas_SOURCES = src/raas.cc src/notifytxt.cc
-AM_CFLAGS = $(RS_CFLAGS) $(DEPS_CFLAGS)
+AM_CFLAGS = $(RS_CFLAGS) $(DEPS_CFLAGS) -std=c++0x
 AM_CPPFLAGS = $(AM_CFLAGS)
-LIBS += $(RS_LIBS) $(DEPS_LIBS)  -lgpgme
+LIBS += $(RS_LIBS) $(DHT_LIBS) $(DEPS_LIBS)  -lgpgme
