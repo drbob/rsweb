@@ -1,0 +1,3 @@
+[submodule "boost.m4"]
+	path = boost.m4
+	url = https://github.com/tsuna/boost.m4.git

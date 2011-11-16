@@ -1,13 +1,19 @@
 AC_INIT([raas], [0.0])
-AM_INIT_AUTOMAKE([foreign subdir-objects])
 AC_CONFIG_SRCDIR([configure.ac])
+AC_CONFIG_AUX_DIR([../boost.m4/build-aux])
+AM_INIT_AUTOMAKE([1.10 foreign color-tests subdir-objects  -Wall])
 AC_CONFIG_HEADERS([config.h])    
 AC_PROG_CC                      
-AC_PROG_CXX 
+AC_PROG_CXX
+AC_PROG_LIBTOOL
 AC_CONFIG_FILES([Makefile])
+
+BOOST_REQUIRE
+BOOST_THREADS
 
 PKG_CHECK_MODULES([DEPS], [openssl, QtCore >= 4.7.4, QtGui, libupnp,
                    libevent, libevent_pthreads, gnome-keyring-1])
+
 
 AC_ARG_WITH([libretroshare-include-path],
             [AS_HELP_STRING([--with-libretroshare-include-path],

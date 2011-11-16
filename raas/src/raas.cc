@@ -63,15 +63,14 @@ int main(int argc, char** argv) {
 
     rsServer -> StartupRetroShare();
 
-    rsweb::request_queue req_queue;
-    rsweb::request_processor req_processor(req_queue);
+    rsweb::thread_pool thread_pool(16); 
 
     evthread_use_pthreads();
     event_init();
     event_base* evbase = event_base_new();
     evthread_make_base_notifiable(evbase);
     evhttp* http_base = evhttp_new(evbase);
-    evhttp_set_gencb(http_base, rsweb::queue_request, &req_queue); 
+    evhttp_set_gencb(http_base, rsweb::queue_request, &thread_pool); 
     evhttp_bind_socket(http_base, "0.0.0.0", 10101);
 
     event_base_dispatch(evbase);
