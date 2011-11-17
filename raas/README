@@ -5,4 +5,20 @@ Bundles libretroshare up into a convenient web-service style daemon for
 use with fancier front end software to actually make it usable.
 
 
+Compiling
+---------
+
+Compile and install Jansson.
+
+Compile boost.m4.
+
+Make sure you have the deps listed at the top of configure.ac installed.
+
+Then do this to generate the required configure script and Makefile.
+
+autoreconf -fvi
+./configure
+make
+./raas
+
 
