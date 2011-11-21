@@ -68,8 +68,8 @@ int main(int argc, char** argv) {
 
     rsweb::thread_pool thread_pool(16); 
 
-    evthread_use_pthreads();
     event_init();
+    evthread_use_pthreads();
     event_base* evbase = event_base_new();
     evthread_make_base_notifiable(evbase);
     evhttp* http_base = evhttp_new(evbase);

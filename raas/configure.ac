@@ -9,9 +9,11 @@ AC_PROG_LIBTOOL
 AC_CONFIG_FILES([Makefile])
 
 BOOST_REQUIRE
+BOOST_SYSTEM
+BOOST_FILESYSTEM
 BOOST_THREADS
 
-PKG_CHECK_MODULES([DEPS], [openssl, QtCore >= 4.7.4, QtGui, libupnp,
+PKG_CHECK_MODULES([DEPS], [openssl, QtCore >= 4.7.4,libupnp,
                    libevent, libevent_pthreads, gnome-keyring-1,
                    jansson])
 

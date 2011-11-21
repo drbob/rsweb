@@ -1,0 +1,82 @@
+#ifndef RSWEB_ENTRYPOINT_HELPER
+#define RSWEB_ENTRYPOINT_HELPER
+
+#include <event2/buffer.h>
+#include <event2/event.h>
+#include <event2/keyvalq_struct.h>
+#include <event2/http.h>
+#include <list>
+#include <iostream>
+#include <tuple>
+#include <functional>
+#include <algorithm>
+#include <regex>
+#include <jansson.h>
+#include <QString>
+#include "entrypoints/enabled.h"
+
+namespace rsweb {
+
+// the actual ep funcs look like this
+typedef std::function<void (evhttp_request*)> entrypoint_func_type;
+typedef std::function<bool (const std::string&, evhttp_request*)> entrypoint_matcher_func_type;
+
+// returns a closure that uses predicate_type to control execution of func
+template <typename Pt>
+struct entrypoint_matcher_template {
+    typedef Pt predicate_type;
+
+    entrypoint_matcher_func_type operator()(
+            const typename predicate_type::first_argument_type match,
+            const entrypoint_func_type& func)
+    const {
+        // the closure that actually runs the request handler
+        return [=](const typename predicate_type::second_argument_type& test, 
+                   const typename entrypoint_func_type::argument_type request)
+        {
+            auto result = predicate_type()(match, test);
+            if(result) func(request);
+            return result;
+        };
+    }
+};
+
+// the follow two types work together to implement entrypoint_rx
+// with instantiation-time compiler RX instead of on each call
+// of the returned closure
+struct regex_match_predicate {
+    typedef std::regex first_argument_type;
+    typedef std::string second_argument_type;
+
+    bool operator()(const first_argument_type& rx, const second_argument_type& test) const {
+        return std::regex_search(test.begin(), test.end(), rx);
+    }
+};
+
+struct entrypoint_rx_type : public entrypoint_matcher_template<regex_match_predicate> {
+    typedef entrypoint_matcher_template<regex_match_predicate> inherited;
+
+    entrypoint_matcher_func_type operator()(
+            const std::string& match,
+            const entrypoint_func_type& func)
+    {
+        // compile the regex before storing it in the closure
+        return inherited::operator()(std::regex(match), func); 
+    }
+};
+
+// instances of the entrypoint matcher types for more convenient syntax
+static entrypoint_matcher_template<std::equal_to<std::string>> entrypoint_eq;
+static entrypoint_rx_type entrypoint_rx;
+
+static int json_dump_evbuffer(json_t* json, evbuffer* eb, int flags=0) {
+    return json_dump_callback(json,
+            ([](const char* b, size_t n, void* d){
+                    return evbuffer_add((evbuffer*)d, b, n);
+                }),
+            eb, flags);
+}
+
+};
+
+#endif

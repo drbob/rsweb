@@ -1,0 +1,57 @@
+
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+*~
+.*swp
+
+# OS generated files #
+######################
+.DS_Store*
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# things RAAS generates that we dont want in git
+raas/raas
+raas/autom4te.cache
+raas/Makefile.in
+raas/aclocal.m4
+raas/compile
+raas/configure
+raas/depcomp
+raas/install-sh
+raas/missing
+raas/config.status
+raas/config.h
+raas/stamp-*
+raas/Makefile
+
+.deps
+.dirstamp
+*.Po
+config.log
