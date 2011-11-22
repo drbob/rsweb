@@ -10,9 +10,9 @@
 #include <tuple>
 #include <functional>
 #include <algorithm>
-#include <regex>
 #include <jansson.h>
 #include <QString>
+#include <boost/regex.hpp>
 #include "entrypoints/enabled.h"
 
 namespace rsweb {
@@ -45,11 +45,11 @@ struct entrypoint_matcher_template {
 // with instantiation-time compiler RX instead of on each call
 // of the returned closure
 struct regex_match_predicate {
-    typedef std::regex first_argument_type;
+    typedef boost::regex first_argument_type;
     typedef std::string second_argument_type;
 
     bool operator()(const first_argument_type& rx, const second_argument_type& test) const {
-        return std::regex_search(test.begin(), test.end(), rx);
+        return boost::regex_search(test, rx);
     }
 };
 
@@ -61,7 +61,7 @@ struct entrypoint_rx_type : public entrypoint_matcher_template<regex_match_predi
             const entrypoint_func_type& func)
     {
         // compile the regex before storing it in the closure
-        return inherited::operator()(std::regex(match), func); 
+        return inherited::operator()(inherited::predicate_type::first_argument_type(match), func); 
     }
 };
 

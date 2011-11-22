@@ -2,8 +2,10 @@
 #include <retroshare/rspeers.h>
 #include <retroshare/rsmsgs.h>
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <magic.h>
 
 namespace rsweb {
 
@@ -17,6 +19,7 @@ void ep_static_files(evhttp_request* req) {
   
     // FIXME: check that uri_path resides within the desired
     // sub-tree
+    std::cout << "loading file " << fs_path.string() << std::endl;
 
     // let libev know we want to send this file
     int file_fd = open(fs_path.string().c_str(), O_RDONLY);
@@ -25,10 +28,16 @@ void ep_static_files(evhttp_request* req) {
     struct evbuffer* outbuf = evhttp_request_get_output_buffer(req);
     evbuffer_add_file(outbuf, file_fd, 0, fs::file_size(fs_path)); 
 
+    const std::string filename = fs_path.filename().string();
+    const char* mime = "text/plain";
+    if(boost::ends_with(filename, ".js")) mime = "application/ecmascript";
+    else if(boost::ends_with(filename, ".html")) mime = "text/html";
+
     // set the http response
     struct evkeyvalq* headers = evhttp_request_get_output_headers(req);
-    evhttp_add_header(headers, "Content-Type", "text/plain");
+    evhttp_add_header(headers, "Content-Type", mime);
     evhttp_send_reply(req, 200, "OK", NULL);
+
 
 }
 };

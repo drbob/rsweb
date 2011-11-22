@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+    <head>
+        <script src="jquery-1.7.min.js"></script>
+        <script src="pagedown/Markdown.Converter.js"></script>
+        <script src="pagedown/Markdown.Sanitizer.js"></script>
+        <script src="rs-chat.js"></script>
+        <script>$(document).ready(function() {
+            RsChat.public_chat($("#chat_output"), $('#chat_input'));
+            });</script>
+        <style>
+#chat_output section {
+    
+}
+
+#chat_output section h1,
+#chat_output section p
+{
+    display: inline;
+    margin: 1em;
+}
+        </style>
+    </head>
+    <body>
+        <section id="chat_output">
+        </section>
+        <form method="POST" action="/messages/global_chat" id="chat_input">
+            <input type="text" name="msg"></textarea>
+            <input type="submit" />
+        </form>
+    </body>
+</html>

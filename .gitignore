@@ -1,4 +1,29 @@
 
+## included 3rd party projects we should ignored
+pagedown/*
+
+# things RAAS generates that we dont want in git
+raas/raas
+raas/autom4te.cache
+raas/Makefile.in
+raas/aclocal.m4
+raas/compile
+raas/configure
+raas/depcomp
+raas/install-sh
+raas/missing
+raas/config.status
+raas/config.h
+raas/stamp-*
+raas/Makefile
+
+.deps
+.dirstamp
+*.Po
+config.log
+
+## Below here is general wild card stuff we probably don't want ##
+
 # Compiled source #
 ###################
 *.com
@@ -36,22 +61,3 @@ ehthumbs.db
 Icon?
 Thumbs.db
 
-# things RAAS generates that we dont want in git
-raas/raas
-raas/autom4te.cache
-raas/Makefile.in
-raas/aclocal.m4
-raas/compile
-raas/configure
-raas/depcomp
-raas/install-sh
-raas/missing
-raas/config.status
-raas/config.h
-raas/stamp-*
-raas/Makefile
-
-.deps
-.dirstamp
-*.Po
-config.log

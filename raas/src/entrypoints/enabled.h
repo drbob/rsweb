@@ -4,6 +4,8 @@ namespace rsweb {
 void ep_friends(evhttp_request*);
 void ep_global_chat(evhttp_request*);
 void ep_static_files(evhttp_request*);
+void ep_file_share_browse(evhttp_request*);
+
 
 
 static void ep_http_404(evhttp_request* req) {

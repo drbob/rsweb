@@ -40,7 +40,7 @@ void ep_global_chat_GET(evhttp_request* req) {
     json_decref(jroot);
     
     struct evkeyvalq* headers = evhttp_request_get_output_headers(req);
-    evhttp_add_header(headers, "Content-Type", "text/plain");
+    evhttp_add_header(headers, "Content-Type", "application/json");
     evhttp_send_reply(req, 200, "OK", resp);
     evbuffer_free(resp);
 }

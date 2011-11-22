@@ -16,3 +16,5 @@ autoreconf -fvi
 ./configure
 make
 
+cd ../
+hg clone https://code.google.com/p/pagedown/
