@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <boost/threadpool.hpp>
 #include <boost/bind.hpp>
-#include "rsweb_entrypoints.h"
+#include "url_map.h"
 
 namespace rsweb {
 typedef boost::threadpool::pool thread_pool;

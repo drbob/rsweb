@@ -1,6 +1,7 @@
 #include "../entrypoint.h"
 #include <retroshare/rspeers.h>
 #include <retroshare/rsmsgs.h>
+#include <retroshare/rsstatus.h>
 namespace rsweb {
 
 void ep_friends(evhttp_request* req) {
@@ -20,7 +21,6 @@ void ep_friends(evhttp_request* req) {
             json_object_set_new(json_friend, key, json_integer(i));
         };
 
-
         set_string("id", peer.id);
         set_string("gpg_id", peer.gpg_id);
         set_string("name", peer.name);
@@ -28,6 +28,14 @@ void ep_friends(evhttp_request* req) {
         set_string("location", peer.location);
         set_string("org", peer.org);
         set_int("connect_state", peer.connectState);
+
+        // grab the users presence setting if it's available
+        StatusInfo peer_status;
+        if(rsStatus->getStatus(peer.id, peer_status)) {
+            set_int("status", peer_status.status); 
+        }
+
+
         json_object_set(jroot, iter->c_str(), json_friend);
     }
 

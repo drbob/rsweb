@@ -16,6 +16,7 @@ raas/config.status
 raas/config.h
 raas/stamp-*
 raas/Makefile
+raas/libtool/*
 
 .deps
 .dirstamp
