@@ -77,6 +77,29 @@ static int json_dump_evbuffer(json_t* json, evbuffer* eb, int flags=0) {
             eb, flags);
 }
 
+static std::string& wstring_to_utf8_string(const std::wstring& src, std::string& dest) {
+    return dest = std::string(QString::fromWCharArray(src.c_str(), src.size()).toUtf8().data());
+}
+
+static std::string wstring_to_utf8_string(const std::wstring& src) {
+    std::string temp;
+    wstring_to_utf8_string(src, temp);
+    return temp;
+}
+
+
+static void evhttp_send_json_reply(evhttp_request* req, json_t* jroot) {
+    struct evbuffer* resp = evbuffer_new();
+    json_dump_evbuffer(jroot, resp, JSON_INDENT(4)); 
+    json_object_clear(jroot);
+    json_decref(jroot);
+
+    struct evkeyvalq* headers = evhttp_request_get_output_headers(req);
+    evhttp_add_header(headers, "Content-Type", "text/plain");
+    evhttp_send_reply(req, 200, "OK", resp);
+    evbuffer_free(resp);
+}
+
 };
 
 #endif
