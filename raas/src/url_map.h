@@ -20,6 +20,8 @@ std::vector<entrypoint_matcher_func_type> entrypoints = {
     entrypoint_rx("^/messages/global_chat$",
                   ep_global_chat),
    
+    entrypoint_rx("^/messages/im", ep_im_chat),
+    
     entrypoint_eq("/friends",
                   ep_friends), 
     
@@ -31,9 +33,14 @@ std::vector<entrypoint_matcher_func_type> entrypoints = {
                   ep_forum_index),
     // returns messages from the thread, either decending directly from the
     // root list or down from a specific sub-thread
+    // or //
+    // is used to post new messages on a forum
     entrypoint_rx("^/forum/[a-f0-9]{28,40}$",
-                  ep_forum_thread), // ?childrenof=<id>, ?recurse=0..Inf
+                  ep_forum_thread),
+
+    //entrypoint_rx("^/forum/create", ep_forum_create)
     
+
     //entrypoint_rx("^/mystatus", ep_my_status),
     //entrypoint_rx("^(?<_>/transfers/)(?<uid>[a-f0-9]{32,40})", ep_file_transfers),
     //entrypoint_rx("^/forum/)", ep_forum_view),

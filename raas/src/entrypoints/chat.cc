@@ -3,46 +3,75 @@
 #include <retroshare/rsmsgs.h>
 namespace rsweb {
 
+
+json_t* serialize_ChatInfo_to_json(const ChatInfo& chat) {
+    auto json_msg = json_object();
+     
+    json_object_set_new(json_msg, "from", json_string(chat.rsid.c_str()));
+    json_object_set_new(json_msg, "send_time", json_integer(chat.sendTime));
+    json_object_set_new(json_msg, "recv_time", json_integer(chat.recvTime));
+    json_object_set_new(json_msg, "msg", json_string(wstring_to_utf8_string(chat.msg).c_str()));
+
+    return json_msg;
+}
+
+
+void ep_im_chat_GET(evhttp_request* req) {
+    // i have no idea what this actually does and we dont actually need to call it
+    const int qcount = rsMsgs->getPublicChatQueueCount();
+
+    std::list<std::string> active_chats;
+    rsMsgs->getPrivateChatQueueIds(true, active_chats);
+
+    auto json_chats = json_object();
+    for(std::string& id : active_chats) {
+        std::cout << "chat " << id << std::endl;
+        
+        std::list<ChatInfo> chat_queue;
+        auto json_chat_messages = json_array();
+        
+        rsMsgs->getPrivateChatQueue(true, id, chat_queue);
+        for(ChatInfo& chat : chat_queue) {
+            auto json_msg = serialize_ChatInfo_to_json(chat);
+            json_array_append_new(json_chat_messages, json_msg);
+        }
+        
+        json_object_set_new(json_chats, id.c_str(), json_chat_messages);
+
+        rsMsgs->clearPrivateChatQueue(true, id);
+    }
+    evhttp_send_json_reply(req, json_chats);
+}
+
+void ep_im_chat_POST(evhttp_request* req) {
+
+}
+
+void ep_im_chat(evhttp_request* req) {
+    // send or recv?
+    evhttp_cmd_type method = evhttp_request_get_command(req);
+    if(method == evhttp_cmd_type::EVHTTP_REQ_GET) {
+        ep_im_chat_GET(req);
+    } else if(method == evhttp_cmd_type::EVHTTP_REQ_POST) {
+        ep_im_chat_POST(req);
+    }
+}
+
+
 void ep_global_chat_GET(evhttp_request* req) {
     std::list<ChatInfo> chat;
     rsMsgs->getPublicChatQueue(chat);
-    auto jroot = json_object();
-    auto json_messages = json_array();
-    json_object_set_new(jroot, "messages", json_messages);
-
-    for(auto iter = chat.begin(); iter != chat.end(); ++iter) {
-        std::cout << iter->rsid << std::endl; //" " << iter->msg << std::endl;
-
-        auto json_msg = json_object();
-        // make a coroutine to set the keys to reduce C&P
-        // really need a nice C++ified wrapper for the JSON lib
-        auto set_string = [&](const char* key, std::string str){
-            json_object_set_new(json_msg, key, json_string(str.c_str()));
-        };
-        auto set_int = [&](const char* key, uint32_t i){
-            json_object_set_new(json_msg, key, json_integer(i));
-        };
-
-        set_string("from", iter->rsid);
-        set_int("send_time", iter->sendTime);
-        set_int("recv_time", iter->recvTime);
-        // this is horrendously ugly but at least QT is doing something useful
-        set_string("msg",
-                std::string(QString::fromWCharArray(iter->msg.c_str(), iter->msg.size()).toUtf8().data())
-                );
     
+    auto json_messages = json_array();
+    for(ChatInfo& msg : chat) {
+        json_t* json_msg = serialize_ChatInfo_to_json(msg);
         json_array_append_new(json_messages, json_msg);
     }
 
-    struct evbuffer* resp = evbuffer_new();
-    json_dump_evbuffer(jroot, resp, JSON_INDENT(4)); 
-    json_object_clear(jroot);
-    json_decref(jroot);
-    
-    struct evkeyvalq* headers = evhttp_request_get_output_headers(req);
-    evhttp_add_header(headers, "Content-Type", "application/json");
-    evhttp_send_reply(req, 200, "OK", resp);
-    evbuffer_free(resp);
+    auto jroot = json_object();
+    json_object_set_new(jroot, "messages", json_messages);
+   
+    evhttp_send_json_reply(req, jroot);
 }
 
 void ep_global_chat_POST(evhttp_request* req) {
