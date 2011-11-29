@@ -28,16 +28,13 @@ void ep_forum_index(evhttp_request* req) {
     auto jroot = json_object();
     json_object_set_new(jroot, "forums", json_forum_list);
 
-    // dump the json out
-    struct evbuffer* resp = evbuffer_new();
-    json_dump_evbuffer(jroot, resp, JSON_INDENT(4)); 
-    json_object_clear(jroot);
-    json_decref(jroot);
+    return evhttp_send_json_reply(req, jroot);
+}
 
-    struct evkeyvalq* headers = evhttp_request_get_output_headers(req);
-    evhttp_add_header(headers, "Content-Type", "text/plain");
-    evhttp_send_reply(req, 200, "OK", resp);
-    evbuffer_free(resp);
+void ep_forum_create(evhttp_request* req) {
+    // FIXME: actually create the forum and return something useful
+    auto jroot = json_object();
+    return evhttp_send_json_reply(req, jroot);
 }
 
 void ep_forum_thread_GET(evhttp_request* req) {
