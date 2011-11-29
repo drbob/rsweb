@@ -1,0 +1,96 @@
+/*
+COLOURS
+ red      #dc322f
+ orange   #cb4b16
+ blue     #268bd2
+ yellow   #b58900
+ dgrey0   #002b36
+ dgrey1   #073642
+ mgrey0   #586e75
+ mgrey1   #657b83
+ mgrey2   #839496
+ mgrey3   #93a1a1
+ lgrey0   #eee8d5
+ lgrey1   #fdf6e3
+*/
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-size: 12pt;
+    background: #fdf6e3;
+    color: #002b36;
+    font-family: sans-serif;
+    height: 100%;width: 100%;
+}
+
+body > h1 {
+    position: fixed;
+    display: block;
+    font-size: 1.5em;
+    
+    z-index: 1000;
+    
+    margin: 0;
+    padding: 0.5em 0 0.5em 1em;
+    
+    width: 100%;
+
+    background: #fdf6e3;
+    border-bottom: 1px solid #073642; 
+}
+
+#chat_input {
+    height: 2em;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    margin: 0 0 0 0;
+    padding: 0 0 2px 0;
+    background: #fdf6e3;
+    z-index: 1000;
+    display: block;
+}
+
+#chat_input textarea {
+    width: 92%;
+    height: 100%;
+    margin: 0; padding:0 ;
+    font-family: sans-serif;
+}
+
+#chat_input input[type=submit] {
+    width: 7%;
+    height: 100%;
+    vertical-align: top;
+    padding:0 ;
+}
+
+#chat_output {
+    width: 100%;
+    position: absolute;
+    top: 4em;
+}
+
+#chat_output time {
+    margin: 0 1em 0 1em;
+}
+
+#chat_output section {
+    
+}
+
+#chat_output section h1,
+#chat_output section p
+{
+    display: inline;
+    margin: 1em;
+}
+
+
+#friend_list {
+    border-left: 1px solid black;
+    height: 100%;
+    position: fixed;
+    right: 0;
+}

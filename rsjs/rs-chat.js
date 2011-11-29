@@ -8,10 +8,10 @@ var RsChat = new (function() {
             jQuery.getJSON(raas_url + "/messages/global_chat", function(data) {
                 $(data["messages"]).each(function(i, msg){
                     var name = "Unknown";
-                    if(msg.from in RsFriends.friend_list) {
-                        name = RsFriends.friend_list[msg.from]["name"];
+                    if(RsFriends.is_known_id(msg.from)) {
+                        name = RsFriends.from_id(msg.from)["name"];
                     }
-                   
+
                     var when = new Date(); when.setTime(msg.send_time * 1000);
                     when = when.toUTCString();
 
@@ -22,7 +22,7 @@ var RsChat = new (function() {
                     } finally {
                         if(!txt) txt = msg.msg;
                     }
-        
+       
                     var msgel = $('<h1/>').text(name);
                     msgel.append($('<time/>').text(when));
                     msgel = msgel.after(markdown.makeHtml(txt)); 
@@ -41,13 +41,20 @@ var RsChat = new (function() {
                 url: input.attr("action"),
                 data: input.serializeArray(),
                 success: function () {
-                    $(':text', input).attr('value', '');
+                    $(':text, textarea', input).attr('value', '');
                 }
             });
         });
-        
-        // update existing friends data
-        RsFriends.fetch_friends();
+       
+        // also attach a keyup handler so we can submit via text-area
+        input.first("textarea").keyup(function(e) {
+            e = e || event;
+            if (e.keyCode === 13 && e.ctrlKey) {
+                input.submit();
+            }
+            return true;
+        });
+
 
         // setup timers to poll for incoming messages
         var poll_timer = function(){
@@ -55,15 +62,39 @@ var RsChat = new (function() {
                 setTimeout(function(){poll_messages(output, set_timer);}, 1000);
         };
         poll_messages(output, poll_timer);
+
+        $(':text, textarea', input).focus();
     };
 });
 
 var RsFriends = new (function() {
-    this.friend_list = {};
+    this._friend_list = {};
     this.fetch_friends = function() {
         jQuery.getJSON(raas_url + "/friends", function(data) {
-            RsFriends.friend_list = data;
+            var do_trigger = false;
+            if(data != RsFriends._friend_list) do_trigger = true;
+            var old_friends = RsFriends._friend_list;
+            RsFriends._friend_list = data;
+            if(do_trigger) $(RsFriends).trigger('RsFriends_list_updated', [old_friends, data]);
             return data;
+        });
+    };
+
+    this.is_known_id = function(id) {
+        return id in RsFriends._friend_list;
+    };
+
+    this.from_id = function(id) {
+        return RsFriends._friend_list[id];
+    };
+
+    // friend list view, it dumps new html elements into whatever el is
+    // whenever the friend list changes.
+    this.friend_list = function(el) {
+        $(RsFriends).bind('RsFriends_list_updated', function(ev, oldlist, newlist) {
+            jQuery.each(newlist, function (index, value) {
+                el.append($('<li/>').text(value["name"]));
+            });
         });
     };
 })();

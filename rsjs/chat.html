@@ -6,27 +6,26 @@
         <script src="pagedown/Markdown.Sanitizer.js"></script>
         <script src="rs-chat.js"></script>
         <script>$(document).ready(function() {
+            RsFriends.friend_list($('#friend_list'));
             RsChat.public_chat($("#chat_output"), $('#chat_input'));
-            });</script>
-        <style>
-#chat_output section {
-    
-}
 
-#chat_output section h1,
-#chat_output section p
-{
-    display: inline;
-    margin: 1em;
-}
-        </style>
+
+            RsFriends.fetch_friends();
+            });</script>
+        <link rel="stylesheet" type="text/css" href="style.css" />
+        
     </head>
     <body>
+        <h1>Public Chat</h1>
         <section id="chat_output">
         </section>
         <form method="POST" action="/messages/global_chat" id="chat_input">
-            <input type="text" name="msg"></textarea>
-            <input type="submit" />
+            <textarea name="msg"></textarea>
+            <input type="submit" value="Send" />
         </form>
+        <section>
+        <ol id="friend_list">
+        </ol>
+        </section>
     </body>
 </html>
