@@ -15,9 +15,9 @@ BOOST_THREADS
 BOOST_REGEX
 BOOST_STRING_ALGO
 
-PKG_CHECK_MODULES([DEPS], [openssl, QtCore >= 4.7.4,libupnp,
-                   libevent, libevent_pthreads, gnome-keyring-1,
-                   jansson, gio-2.0])
+PKG_CHECK_MODULES([DEPS], [openssl, QtCore >= 4, libupnp,
+                           libevent, libevent_pthreads, gnome-keyring-1,
+                           jansson, gio-2.0])
 
 
 AC_ARG_WITH([libretroshare-include-path],
