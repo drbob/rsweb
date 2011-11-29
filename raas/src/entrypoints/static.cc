@@ -32,6 +32,7 @@ void ep_static_files(evhttp_request* req) {
     const char* mime = "text/plain";
     if(boost::ends_with(filename, ".js")) mime = "application/ecmascript";
     else if(boost::ends_with(filename, ".html")) mime = "text/html";
+    else if(boost::ends_with(filename, ".css")) mime = "text/css";
 
     // set the http response
     struct evkeyvalq* headers = evhttp_request_get_output_headers(req);
