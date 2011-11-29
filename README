@@ -3,7 +3,9 @@
 
 ./bootstrap
 
-will fetch and compile the boost.m4 and jansson submodules,
+will fetch and compile the boost.m4 and jansson submodules.
+
+It requires Mercurial (hg) to me installed for at least one library.
 
 you'll also need to compile 
 
