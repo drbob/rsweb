@@ -8,7 +8,10 @@
 #include <boost/iostreams/detail/config/codecvt.hpp>
 #include "notifytxt.h"
 #include "raas_web.h"
+#include "raas.h"
 
+RsControl* rsweb::rs_control = NULL;
+bool rsweb::rs_control_startup_retroshare_called = false;
 
 int main(int argc, char** argv) {
     RsInit::InitRsConfig();
@@ -34,38 +37,21 @@ int main(int argc, char** argv) {
 
     NotifyTxt *notify = new NotifyTxt();
     RsIface *iface = createRsIface(*notify);
-    RsControl *rsServer = createRsControl(*iface, *notify);
-    rsicontrol = rsServer ;
-
+    rsweb::rs_control = createRsControl(*iface, *notify);
+    
+    // this is a global hidden away in libretroshare somewhere
+    // FIXME: i dont actually know if we need to set it this early...
+    rsicontrol = rsweb::rs_control ;
     notify->setRsIface(iface);
 
-    std::string preferredId, gpgId, gpgName, gpgEmail, sslName;
-    RsInit::getPreferedAccountId(preferredId);
-
-    if (RsInit::getAccountDetails(preferredId, gpgId, gpgName, gpgEmail, sslName))
-    {
-        RsInit::SelectGPGAccount(gpgId);
-    }
-
-    /* Key + Certificate are loaded into libretroshare */
-
-    std::string error_string ;
-    int retVal = RsInit::LockAndLoadCertificates(false,error_string);
-    switch(retVal)
-    {
-        case 0:	break;
-        case 1:	std::cerr << "Error: another instance of retroshare is already using this profile" << std::endl;
-                return 1;
-        case 2: std::cerr << "An unexpected error occurred while locking the profile" << std::endl;
-                return 1;
-        case 3: std::cerr << "An error occurred while login with the profile" << std::endl;
-                return 1;
-        default: std::cerr << "Main: Unexpected switch value " << retVal << std::endl;
-                 return 1;
-    }
-
-    rsServer -> StartupRetroShare();
-
+    // !!! we don't call StartupRetroshare() in main()
+    // it's not called until the user selects a profile
+    // via the web interface and actually activates it
+    // doing anything without calling this first results in a segfault
+    //rsweb::rs_control->StartupRetroShare();
+    
+    std::cout << "CONTROL POINTER " << rsweb::rs_control << std::endl;
+    
     rsweb::thread_pool thread_pool(16); 
 
     event_init();

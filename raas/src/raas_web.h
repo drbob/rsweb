@@ -23,6 +23,7 @@ void request_router(evhttp_request* req) {
             return;
         }
     }
+
     // no idea, give up
     ep_http_404(req);
 }
@@ -30,8 +31,10 @@ void request_router(evhttp_request* req) {
 void queue_request(struct evhttp_request* r, void* arg) {
     thread_pool* tp = static_cast<thread_pool*>(arg);
     assert(tp); assert(r);
+    // delay the actual routing of the request until a thread is available
     tp->schedule(boost::bind(request_router, r)); 
 }
+
 };
 
 #endif

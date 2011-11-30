@@ -87,6 +87,16 @@ static std::string wstring_to_utf8_string(const std::wstring& src) {
     return temp;
 }
 
+static std::wstring& utf8_string_to_wstring(const std::string& src, std::wstring& dest) {
+    dest = QString::fromUtf8(src.c_str(), src.length()).toStdWString();
+    return dest;
+}
+
+static std::wstring utf8_string_to_wstring(const std::string& src) {
+    return QString::fromUtf8(src.c_str(), src.length()).toStdWString();
+}
+
+
 
 static void evhttp_send_json_reply(evhttp_request* req, json_t* jroot) {
     struct evbuffer* resp = evbuffer_new();
