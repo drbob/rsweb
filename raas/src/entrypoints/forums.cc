@@ -3,6 +3,7 @@
 #include <retroshare/rspeers.h>
 #include <retroshare/rsforums.h>
 #include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 namespace rsweb {
 
 void ep_forum_index(evhttp_request* req) {
@@ -18,9 +19,10 @@ void ep_forum_index(evhttp_request* req) {
         json_object_set_new(forum_json, "last_post", json_integer(f.lastPost));
         json_object_set_new(forum_json, "pop", json_integer(f.pop));
 
-        // TODO: decode to utf-8
-        //json_object_set_new(forum_json, "name", f.forumName.c_str());
-        //json_object_set_new(forum_json, "description", f.forumDesc.c_str());
+        json_object_set_new(forum_json, "name",
+                json_string(wstring_to_utf8_string(f.forumName).c_str()));
+        json_object_set_new(forum_json, "description",
+                json_string(wstring_to_utf8_string(f.forumDesc).c_str()));
         
         json_array_append_new(json_forum_list, forum_json);
     }
@@ -32,8 +34,32 @@ void ep_forum_index(evhttp_request* req) {
 }
 
 void ep_forum_create(evhttp_request* req) {
-    // FIXME: actually create the forum and return something useful
     auto jroot = json_object();
+    
+    // fetch the post body into a vector<char>
+    evbuffer* postbody = evhttp_request_get_input_buffer(req);
+    size_t postlen = evbuffer_get_length(postbody);
+    std::vector<char> buf(postlen+1, '\0');
+    evbuffer_remove(postbody, &buf.front(), postlen);
+
+    // parse the query string and convert it to a wstring
+    struct evkeyvalq head;
+    evhttp_parse_query_str(&buf.front(), &head);
+    const char* name_cstr = evhttp_find_header(&head, "name");
+    const char* desc_cstr = evhttp_find_header(&head, "desc");
+    const char* flags_cstr = evhttp_find_header(&head, "flags");
+    uint32_t flags = 0;
+    try {
+        flags = boost::lexical_cast<uint32_t>(flags_cstr);
+        std::string forum_id = rsForums->createForum(
+                utf8_string_to_wstring(name_cstr),
+                utf8_string_to_wstring(desc_cstr),
+                flags);
+        json_object_set_new(jroot, "created", json_string(forum_id.c_str()));
+    } catch (boost::bad_lexical_cast &) {
+        json_object_set_new(jroot, "errors", json_string("bad flags"));
+    }
+    
     return evhttp_send_json_reply(req, jroot);
 }
 
