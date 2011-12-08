@@ -7,8 +7,11 @@ raas_SOURCES = src/raas.cc \
 			   src/entrypoints/file_share.cc \
 			   src/entrypoints/static.cc \ 
 			   src/entrypoints/profile.cc \ 
-			   src/entrypoints/forums.cc 
-AM_CFLAGS = $(RS_CFLAGS) $(DEPS_CFLAGS) -std=c++0x -fdata-sections -ffunction-sections
+			   src/entrypoints/forums.cc \
+			   src/middleware/check_profile.cc
+AM_CFLAGS = $(RS_CFLAGS) $(DEPS_CFLAGS) -std=c++0x -fdata-sections -ffunction-sections \
+			-pedantic -Wall -Wpointer-arith -Wcast-qual \
+			-Wextra -fno-common -Wno-unused-function
 AM_CPPFLAGS = $(AM_CFLAGS) $(BOOST_CPPFLAGS) -I../threadpool 
 AM_LDFLAGS = $(BOOST_LDFLAGS) \
 			 $(BOOST_THREAD_LDFLAGS) \

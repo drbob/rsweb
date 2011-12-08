@@ -1,14 +1,13 @@
 #include <retroshare/rsiface.h> 
 #include <retroshare/rsinit.h>  
-
 #include <event.h>
 #include <event2/thread.h>
 #include <iostream>
 #include <locale>
-#include <boost/iostreams/detail/config/codecvt.hpp>
-#include "notifytxt.h"
-#include "raas_web.h"
+
 #include "raas.h"
+#include "raas_web.h"
+#include "notifytxt.h"
 
 RsControl* rsweb::rs_control = NULL;
 bool rsweb::rs_control_startup_retroshare_called = false;
@@ -66,4 +65,5 @@ int main(int argc, char** argv) {
     thread_pool.wait();
     return 1;
 }
+
 

@@ -7,7 +7,6 @@
 namespace rsweb {
     extern RsControl* rs_control; 
     extern bool rs_control_startup_retroshare_called;
-};
-
+}
 
 #endif

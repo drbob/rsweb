@@ -37,19 +37,28 @@ void ep_profile_list(evhttp_request* req) {
 
 void ep_profile_activate(evhttp_request* req) {
     // account activation is done entirely via POST
-    // FIXME: actually load the desired account id from the POST data
-   
-    std::string acc_id = "a465a526b6c33b49c26c6a4ed5d4471e";
-    std::string errstr;
+ 
+    // fetch the post body into a vector<char>
+    evbuffer* postbody = evhttp_request_get_input_buffer(req);
+    size_t postlen = evbuffer_get_length(postbody);
+    std::vector<char> buf(postlen+1, '\0');
+    evbuffer_remove(postbody, &buf.front(), postlen);
+ 
+    // parse the posted query string and convert it to a wstring
+    struct evkeyvalq head;
+    evhttp_parse_query_str(&buf.front(), &head);
+    const char* profile_cstr = evhttp_find_header(&head, "profile");
+    std::string acc_id = profile_cstr ? profile_cstr : "";
+    std::string errstr = "Malformed activation request or profile already active";
 
-    if(rsweb::rs_control_startup_retroshare_called == false) {
+    if(rsweb::rs_control_startup_retroshare_called == false && !acc_id.empty()) {
         std::string gpgId, gpgName, gpgEmail, sslName;
         if (RsInit::getAccountDetails(acc_id, gpgId, gpgName, gpgEmail, sslName)) {
             RsInit::SelectGPGAccount(gpgId);
         }
 
         std::string error_string;
-        int retVal = RsInit::LockAndLoadCertificates(false,error_string);
+        int retVal = RsInit::LockAndLoadCertificates(false, error_string);
         if(retVal == 1) {
             errstr = "Another instance of retroshare is already using this profile";
         } else if(retVal == 2) {
@@ -58,12 +67,12 @@ void ep_profile_activate(evhttp_request* req) {
             errstr = "An error occurred while login with the profile";
         } else if(retVal != 0) {
             errstr = "Unknown error while loading certificates";
+        } else {
+            errstr = "";
         }
 
         rsweb::rs_control->StartupRetroShare();
         rsweb::rs_control_startup_retroshare_called = true;
-    } else {
-        errstr = "A profile is already activated!"; 
     }
 
     auto jroot = json_object();

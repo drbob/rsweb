@@ -9,7 +9,7 @@ namespace rsweb {
 
 json_t* serialize_ChatInfo_to_json(const ChatInfo& chat) {
     auto json_msg = json_object();
-     
+
     json_object_set_new(json_msg, "from", json_string(chat.rsid.c_str()));
     json_object_set_new(json_msg, "send_time", json_integer(chat.sendTime));
     json_object_set_new(json_msg, "recv_time", json_integer(chat.recvTime));
@@ -40,7 +40,11 @@ void ep_im_chat_GET(evhttp_request* req) {
         active_chats.push_back(path_parts.front());
     }
 
-    if(active_chats.empty()) rsMsgs->getPrivateChatQueueIds(true, active_chats);
+    // if no queue specified in the URL, generate messages from all queues!
+    if(active_chats.empty()) {
+        rsMsgs->getPrivateChatQueueIds(true, active_chats);
+        active_chats.push_back("public");
+    }
 
     auto json_chats = json_object();
     for(std::string& id : active_chats) {
@@ -51,12 +55,27 @@ void ep_im_chat_GET(evhttp_request* req) {
             auto json_msg = serialize_ChatInfo_to_json(chat);
             json_array_append_new(json_chat_messages, json_msg);
         }
-        
+
         json_object_set_new(json_chats, id.c_str(), json_chat_messages);
 
         // rs doesn't clear this automatically so we tell it to
         rsMsgs->clearPrivateChatQueue(true, id);
     }
+
+    // pull in public chat messages if desired
+    if(std::find(active_chats.begin(), active_chats.end(),
+                "public") != active_chats.end()
+      ) {
+        std::list<ChatInfo> chat_queue;
+        rsMsgs->getPublicChatQueue(chat_queue);
+        json_t* json_chat_messages = json_array();
+        for(ChatInfo& chat : chat_queue) {
+            // FIXME: filter out messages that we sent
+            json_array_append_new(json_chat_messages, serialize_ChatInfo_to_json(chat));
+        }
+        json_object_set_new(json_chats, "public", json_chat_messages);
+    } 
+
     evhttp_send_json_reply(req, json_chats);
 }
 
@@ -77,6 +96,9 @@ void ep_im_chat_POST(evhttp_request* req) {
     path_parts.pop_front(); // ("messages")
     path_parts.pop_front(); // ("im")
     std::string to_id = path_parts.front();
+
+    // alternate call path for posting messages to global chat
+    if(to_id == "public") return ep_global_chat_POST(req);
 
     // fetch the post body into a vector<char>
     evbuffer* postbody = evhttp_request_get_input_buffer(req);
@@ -120,7 +142,7 @@ void ep_im_waiting(evhttp_request* req) {
         std::list<ChatInfo> chat_queue;
         auto json_chat_messages = json_array();
         rsMsgs->getPrivateChatQueue(true, id, chat_queue);
-        
+
         json_object_set_new(json_chats, id.c_str(), json_integer(chat_queue.size()));
     }
     evhttp_send_json_reply(req, json_chats);
@@ -129,7 +151,7 @@ void ep_im_waiting(evhttp_request* req) {
 void ep_global_chat_GET(evhttp_request* req) {
     std::list<ChatInfo> chat;
     rsMsgs->getPublicChatQueue(chat);
-    
+
     auto json_messages = json_array();
     for(ChatInfo& msg : chat) {
         json_t* json_msg = serialize_ChatInfo_to_json(msg);
@@ -138,7 +160,7 @@ void ep_global_chat_GET(evhttp_request* req) {
 
     auto jroot = json_object();
     json_object_set_new(jroot, "messages", json_messages);
-   
+
     evhttp_send_json_reply(req, jroot);
 }
 
@@ -160,9 +182,9 @@ void ep_global_chat_POST(evhttp_request* req) {
     const char* msgdata = evhttp_find_header(&head, "msg");
 
     std::wstring msg(QString::fromUtf8(msgdata).toStdWString());
-    
+
     rsMsgs->sendPublicChat(msg);
-    
+
     evhttp_send_reply(req, 200, "OK", NULL);
 }
 
@@ -182,4 +204,5 @@ void ep_global_chat_waiting(evhttp_request* req) {
     json_object_set_new(jroot, "waiting", json_integer(qcount));
     evhttp_send_json_reply(req, jroot);
 }
-};
+
+}

@@ -8,6 +8,8 @@ void ep_friends(evhttp_request* req) {
     std::list<std::string> ssl_friends;
     rsPeers->getFriendList(ssl_friends);
 
+    // FIXME: also need to dump all of our own local profiles into this list
+    
     auto jroot = json_object();
     for(auto iter = ssl_friends.begin(); iter != ssl_friends.end(); ++iter) {
         auto json_friend = json_object();
