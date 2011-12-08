@@ -1,31 +1,37 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-    <head>
-        <script src="jquery-1.7.min.js"></script>
-        <script src="pagedown/Markdown.Converter.js"></script>
-        <script src="pagedown/Markdown.Sanitizer.js"></script>
-        <script src="rs-chat.js"></script>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>Majic</title>
+		<link type="text/css" href="jq/css/solarized/jquery-ui-1.8.16.custom.css" rel="stylesheet" />	
+		<script type="text/javascript" src="jq/js/jquery-1.7.min.js"></script>
+		<script type="text/javascript" src="jq/js/jquery.timeago.js"></script>
+		<script type="text/javascript" src="jq/js/jquery-ui-1.8.16.custom.min.js"></script>
+        <script type="text/javascript" src="pagedown/Markdown.Converter.js"></script>
+        <script type="text/javascript" src="pagedown/Markdown.Sanitizer.js"></script>
+		<script type="text/javascript" src="rs-chat.js"></script>
         <script>$(document).ready(function() {
-            RsFriends.friend_list($('#friend_list'));
-            RsChat.public_chat($("#chat_output"), $('#chat_input'));
+            $('#chat_input :text, #chat_input textarea').focus();
 
+            RS.UI.friend_list($('#friend_list'));
+            RS.UI.chat_input($('#chat_input'));
+            RS.UI.tabbed_chat_output($("#chat_output"));
 
-            RsFriends.fetch_friends();
+            RS.Identities.monitor_known_idents(RS.UI.trigger_ident_change);
+            RS.Chat.monitor_chat_queues(RS.UI.trigger_chat_incoming);
             });</script>
         <link rel="stylesheet" type="text/css" href="style.css" />
-        
     </head>
     <body>
         <h1>Public Chat</h1>
         <section id="chat_output">
+        <header><ul></ul></header>
         </section>
-        <form method="POST" action="/messages/global_chat" id="chat_input">
+        <form id="chat_input">
             <textarea name="msg"></textarea>
             <input type="submit" value="Send" />
         </form>
-        <section>
         <ol id="friend_list">
         </ol>
-        </section>
     </body>
 </html>

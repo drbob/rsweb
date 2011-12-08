@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+    <head>
+        <script src="jq/js/jquery-1.7.min.js"></script>
+        <script>
+        $(document).ready(function() {
+            jQuery.getJSON('/profiles', function(data, status, xhr) {
+                $('select.profile_list').each(function(i, elem) {
+                    jQuery.each(data, function(i, v) {
+                        var option = $('<option/>').attr('value', i).text(v["ssl_name"] + " (" + v["gpg_name"] + ")");
+                        console.log(option);
+                        $(elem).append(option);
+                    });
+                });
+            });
+        });
+        </script>
+    </head>
+    <body>
+        <h1>Login</h1>
+        <form method="POST" action="/profile/activate">
+            <select name="profile" class="profile_list"></select>
+            <input type="submit" value="Login">
+        </form>
+    </body>

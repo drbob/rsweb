@@ -25,19 +25,14 @@ html, body {
 }
 
 body > h1 {
-    position: fixed;
     display: block;
     font-size: 1.5em;
-    
     z-index: 1000;
-    
     margin: 0;
     padding: 0.5em 0 0.5em 1em;
-    
-    width: 100%;
-
-    background: #fdf6e3;
-    border-bottom: 1px solid #073642; 
+    position: fixed;
+    width: 80%;
+    background: inherit;
 }
 
 #chat_input {
@@ -67,9 +62,9 @@ body > h1 {
 }
 
 #chat_output {
-    width: 100%;
-    position: absolute;
-    top: 4em;
+    display: block;
+    width: 80%;
+    padding-top: 4em;
 }
 
 #chat_output time {
@@ -87,10 +82,41 @@ body > h1 {
     margin: 1em;
 }
 
+#chat_output .change-speaker {
+    border-bottom: 1px dashed black;
+}
 
+#chat_output time {
+    color: #ccc;
+    font-size: 0.8em;
+}
+
+#chat_output .ui-tabs-nav {
+    position: fixed;
+    display: block;
+    min-width: 80%
+}
+#chat_output .ui-tabs-panel {
+    padding-top: 4em;
+}
 #friend_list {
-    border-left: 1px solid black;
+    display: inline-block;
+    border: 1px solid black;
     height: 100%;
+    width: 15%;
+    max-width: 15%;
     position: fixed;
     right: 0;
+    top: 0;
 }
+
+
+.rs-ident-label {
+    font-weight: normal;
+}
+
+.rs-ident-label.online {
+    font-weight: bold;
+}
+
+
