@@ -1,25 +1,62 @@
 <!doctype html>
 <html>
     <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="style.css" />
         <script src="jq/js/jquery-1.7.min.js"></script>
         <script>
         $(document).ready(function() {
             jQuery.getJSON('/profiles', function(data, status, xhr) {
                 $('select.profile_list').each(function(i, elem) {
-                    jQuery.each(data, function(i, v) {
-                        var option = $('<option/>').attr('value', i).text(v["ssl_name"] + " (" + v["gpg_name"] + ")");
-                        console.log(option);
+                    jQuery.each(data['profiles'], function(i, v) {
+                        var option = $('<option/>').attr('value', i).text(v["location"] + 
+                        " (" + v["name"] +
+                        " <" + v["email"] + ">" +
+                        ")"
+                        );
+                        $(elem).append(option);
+                    });
+
+                });
+
+                $('select.identity_list').each(function(i, elem) {
+                    jQuery.each(data['identities'], function(i, v) {
+                        var option = $('<option/>').attr('value', i).text(
+                        v["name"] + " <" + v['email'] + "> [" + v['id'] + "]");
                         $(elem).append(option);
                     });
                 });
             });
         });
-        </script>
-    </head>
-    <body>
-        <h1>Login</h1>
+    </script>
+    <style>
+    </style>
+</head>
+<body>
+    <div style="position: absolute; top: 25%; left: 25%;">
+        <h1>Connect</h1>
         <form method="POST" action="/profile/activate">
-            <select name="profile" class="profile_list"></select>
+            <label>Profile: <select name="profile" class="profile_list"></select></label>
             <input type="submit" value="Login">
         </form>
-    </body>
+
+        <h1>New Profile</h1>
+        <form method="POST" action="/profile/create">
+            <ol>
+                <li><label>Profile name: <input type="text" name="name" size="24"></label>
+                <li><label>Identity: <select class="identity_list" name="pgp_id"></select></label> or <input type="button" value="New Identity">
+                <li><input type="submit" value="Create Profile">
+        </ol>
+    </form>
+
+    <h1>New Identity</h1>
+    <form method="POST" action="/identity/create">
+        <ol>
+                <li><label>Name: <input type="text" name="name" size="24"></label>
+                <li><label>Email: <input type="text" name="email" size="24"></label>
+                <li><label>Password: <input type="text" name="password" size="24"></label>
+                <li><input type="submit" value="Create Identity">
+        </ol>
+    </form>
+    </div>
+</body>

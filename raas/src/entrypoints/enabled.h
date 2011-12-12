@@ -22,6 +22,9 @@ namespace rsweb {
 
     void ep_profile_list(evhttp_request*);
     void ep_profile_activate(evhttp_request*);
+    void ep_profile_active(evhttp_request*);
+    void ep_profile_create(evhttp_request*);
+    void ep_pgp_identity_create(evhttp_request*);
 
     static void ep_http_500(evhttp_request* req) {
         struct evbuffer* resp = evbuffer_new();

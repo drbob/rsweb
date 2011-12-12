@@ -2,55 +2,36 @@
 #include <retroshare/rspeers.h>
 #include <retroshare/rsmsgs.h>
 #include <retroshare/rsstatus.h>
+#include <retroshare/rsinit.h>
+#include <boost/foreach.hpp>
 namespace rsweb {
 
 void ep_friends(evhttp_request* req) {
+    // friends accounts
     std::list<std::string> ssl_friends;
     rsPeers->getFriendList(ssl_friends);
-
-    // FIXME: also need to dump all of our own local profiles into this list
-    
     auto jroot = json_object();
     for(auto iter = ssl_friends.begin(); iter != ssl_friends.end(); ++iter) {
-        auto json_friend = json_object();
         RsPeerDetails peer;
         rsPeers->getPeerDetails(*iter, peer);
-        // make a coroutine to set the keys to reduce C&P
-        auto set_string = [&](const char* key, std::string str){
-            json_object_set_new(json_friend, key, json_string(str.c_str()));
-        };
-        auto set_int = [&](const char* key, uint32_t i){
-            json_object_set_new(json_friend, key, json_integer(i));
-        };
-
-        set_string("id", peer.id);
-        set_string("gpg_id", peer.gpg_id);
-        set_string("name", peer.name);
-        set_string("email", peer.email);
-        set_string("location", peer.location);
-        set_string("org", peer.org);
-        set_int("connect_state", peer.connectState);
-
-        // grab the users presence setting if it's available
-        StatusInfo peer_status;
-        if(rsStatus->getStatus(peer.id, peer_status)) {
-            set_int("status", peer_status.status); 
-        }
-
-
+        json_t* json_friend = serialize_RsPeerDetails_to_json(peer);
         json_object_set(jroot, iter->c_str(), json_friend);
     }
 
-    struct evbuffer* resp = evbuffer_new();
-    json_dump_evbuffer(jroot, resp, JSON_INDENT(4)); 
-    json_object_clear(jroot);
-    json_decref(jroot);
-
-    struct evkeyvalq* headers = evhttp_request_get_output_headers(req);
-    evhttp_add_header(headers, "Content-Type", "text/plain");
-    evhttp_send_reply(req, 200, "OK", resp);
-    evbuffer_free(resp);
+    // local accounts 
+    std::list<std::string> profile_ids;
+    RsInit::getAccountIds(profile_ids);
+   
+    BOOST_FOREACH(std::string& id, profile_ids) {
+        RsPeerDetails profile;
+        if(rsPeers->getPeerDetails(id, profile)) {
+            json_t* profile_json = serialize_RsPeerDetails_to_json(profile);
+            json_object_set_new(jroot, id.c_str(), profile_json);
+        }
+    }
+    
+    evhttp_send_json_reply(req, jroot);
 }
 
 
-};
+}

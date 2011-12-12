@@ -31,21 +31,36 @@ namespace rsweb {
         entrypoint_rx("^/messages/im/waiting$",
                 ep_im_waiting),
 
+        // these two have the same output
+        // FIXME: friends should probably not show local profiles
         entrypoint_rx("^/friends$",
                 ep_friends), 
-        // FIXME: should be like /friends except also add other idents we know
-        // about such as our own local ones
         entrypoint_rx("^/identities$",
                 ep_friends), 
 
-        // lists available profiles
-        entrypoint_rx("^/profiles$",
+        // lists available profiles and gpg identities
+        entrypoint_rx("^/(my/)?profiles$",
                 ep_profile_list),
+        
+        // displays the active profile
+        entrypoint_rx("^/(my/)?profile/active$",
+                ep_profile_active),
+
+        // creates new gpg keys
+        entrypoint_rx("^/(my/)?identity/create$",
+                ep_pgp_identity_create),
+
+        // creates new profiles
+        entrypoint_rx("^/(my/)?profile/create$",
+                ep_profile_create),
 
         // if we arent currently logged in, this will activate the 
         // RS profile in the URL using the password provided
-        entrypoint_rx("^/profile/activate$",
+        entrypoint_rx("^/(my/)?profile/activate$",
                 ep_profile_activate),
+
+        // only for browsing files
+        // downloads must be initiated explicitly
         entrypoint_rx("^(?<_>/file_sharing/)(?<uid>[a-f0-9]{32,40})",
                 ep_file_share_browse),
 

@@ -7,17 +7,6 @@
 
 namespace rsweb {
 
-json_t* serialize_ChatInfo_to_json(const ChatInfo& chat) {
-    auto json_msg = json_object();
-
-    json_object_set_new(json_msg, "from", json_string(chat.rsid.c_str()));
-    json_object_set_new(json_msg, "send_time", json_integer(chat.sendTime));
-    json_object_set_new(json_msg, "recv_time", json_integer(chat.recvTime));
-    json_object_set_new(json_msg, "msg", json_string(wstring_to_utf8_string(chat.msg).c_str()));
-
-    return json_msg;
-}
-
 void ep_im_chat_GET(evhttp_request* req) {
     // extract the path from the URI (drop query and fragment) and decode it
     const struct evhttp_uri* uri = evhttp_request_get_evhttp_uri(req);

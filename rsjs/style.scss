@@ -1,0 +1,164 @@
+/* Solarized stuff */
+$base03:    #002b36;
+$base02:    #073642;
+$base01:    #586e75;
+$base00:    #657b83;
+$base0:     #839496;
+$base1:     #93a1a1;
+$base2:     #eee8d5;
+$base3:     #fdf6e3;
+$yellow:    #b58900;
+$orange:    #cb4b16;
+$red:       #dc322f;
+$magenta:   #d33682;
+$violet:    #6c71c4;
+$blue:      #268bd2;
+$cyan:      #2aa198;
+$green:     #859900;
+@mixin rebase($rebase03,$rebase02,$rebase01,$rebase00,$rebase0,$rebase1,$rebase2,$rebase3) 
+{
+    background-color:$rebase03;
+    color:$rebase0;
+    * { color:$rebase0; }
+    h1,h2,h3,h4,h5,h6 { color:$rebase1; border-color: $rebase0; }
+    a, a:active, a:visited { color: $rebase1; }
+}
+@mixin accentize($accent) {
+    a, a:active, a:visited, code.url { color: $accent; }
+    h1,h2,h3,h4,h5,h6 {color:$accent}
+}
+
+html * {
+    color-profile: sRGB;
+    rendering-intent: auto;
+}
+
+/* Our own stuff */
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-size: 12pt;
+    background: $base3;
+    color: $base03;
+    font-family: sans-serif;
+    height: 100%;
+}
+
+body > h1 {
+    font-size: 1.5em;
+    height: 3rem;
+    line-height: 3rem;
+    padding: 0 0 0 1em;
+    margin: 0;
+    background: inherit;
+}
+
+#chat_input {
+    position: absolute;
+    height: 2em;
+    width: 100%;
+    bottom: 0;
+    left:0;
+    right: 0;
+    margin: 0 0 0 0;
+    padding: 0 0 2px 0;
+    border: 0;
+    background: $base3;
+    z-index: 1003;
+    display: block;
+}
+
+#chat_input textarea {
+    width: 92%;
+    height: 100%;
+    margin: 0; padding:0 ;
+    font-family: sans-serif;
+}
+
+#chat_input input[type=submit] {
+    width: 7%;
+    height: 100%;
+    vertical-align: top;
+    padding:0;
+    margin:0;
+}
+
+#chat_output {
+    position: absolute;
+    display: inline-block;
+    width: 80%;
+    top: 3rem;
+    bottom: 2.35rem;
+    border: none;
+    float: left;
+}
+
+#chat_output time {
+    margin: 0 1em 0 1em;
+}
+
+#chat_output section h1,
+#chat_output section p
+{
+    display: inline;
+    margin: 1em;
+}
+
+#chat_output .change-speaker {
+    border-bottom: 1px dashed $base1;
+}
+
+#chat_output time {
+    color: $base1;
+    font-size: 0.8rem;
+}
+
+#chat_output > .ui-tabs-nav {
+    background: $base03;
+}
+
+#chat_output > .ui-tabs-panel {
+    overflow-y: scroll;
+    position: absolute;
+    top: 3rem;
+    bottom: 0;
+    left:0;
+    right: 0;
+}
+
+#chat_output .same-speaker .rs-ident-label {
+    visibility: hidden;
+    font-size: 0.8rem;
+}
+
+#chat_output .same-speaker:hover .rs-ident-label {
+    visibility: visible;
+    font-size: 0.8rem;
+}
+
+#friend_list {
+    display: inline-block;
+    float: right;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 1001;
+    width: 15%;
+    max-width: 15%;
+    border:0;
+    margin: 0;
+    padding: 1em 0 0 2em;
+    border-left: 1rem solid $base03;
+}
+
+.rs-ident-label {
+    font-weight: normal;
+}
+
+.rs-ident-label.online {
+    font-weight: bold;
+}
+
+

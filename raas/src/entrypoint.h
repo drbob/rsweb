@@ -13,6 +13,12 @@
 #include <jansson.h>
 #include <QString>
 #include <boost/regex.hpp>
+
+
+#include <retroshare/rspeers.h>
+#include <retroshare/rsmsgs.h>
+#include <retroshare/rsstatus.h>
+
 #include "entrypoints/enabled.h"
 
 namespace rsweb {
@@ -81,7 +87,7 @@ namespace rsweb {
                  }),
                 eb, flags);
     }
-
+    
     static std::string& wstring_to_utf8_string(const std::wstring& src, std::string& dest) {
         return dest = std::string(QString::fromWCharArray(src.c_str(), src.size()).toUtf8().data());
     }
@@ -102,6 +108,50 @@ namespace rsweb {
     }
 
 
+    static json_t* serialize_ChatInfo_to_json(const ChatInfo& chat) {
+        auto json_msg = json_object();
+
+        json_object_set_new(json_msg, "from", json_string(chat.rsid.c_str()));
+        json_object_set_new(json_msg, "send_time", json_integer(chat.sendTime));
+        json_object_set_new(json_msg, "recv_time", json_integer(chat.recvTime));
+        json_object_set_new(json_msg, "msg", json_string(wstring_to_utf8_string(chat.msg).c_str()));
+
+        return json_msg;
+    }
+
+    static json_t* serialize_RsPeerDetails_to_json(RsPeerDetails& peer) {
+        json_t* json_friend = json_object();
+
+        // make a coroutine to set the keys to reduce C&P
+        auto set_string = [&](const char* key, std::string str){
+            json_object_set_new(json_friend, key, json_string(str.c_str()));
+        };
+        auto set_int = [&](const char* key, uint32_t i){
+            json_object_set_new(json_friend, key, json_integer(i));
+        };
+
+        set_string("id", peer.id);
+        set_string("gpg_id", peer.gpg_id);
+        set_string("name", peer.name);
+        set_string("email", peer.email);
+        set_string("fingerprint", peer.fpr);
+        set_int("trust_level", peer.trustLvl);
+        set_int("valid_level", peer.validLvl);
+
+        if(peer.isOnlyGPGdetail == false) {
+            set_string("org", peer.org);
+            set_string("location", peer.location);
+            set_int("connect_state", peer.connectState);
+
+            // grab the users presence setting if it's available
+            StatusInfo peer_status;
+            if(rsStatus && rsStatus->getStatus(peer.id, peer_status)) {
+                set_int("status", peer_status.status); 
+            }
+        }
+
+        return json_friend;
+    }
 
     static void evhttp_send_json_reply(evhttp_request* req, json_t* jroot) {
         struct evbuffer* resp = evbuffer_new();
@@ -113,6 +163,15 @@ namespace rsweb {
         evhttp_add_header(headers, "Content-Type", "text/plain");
         evhttp_send_reply(req, 200, "OK", resp);
         evbuffer_free(resp);
+    }
+
+    static int evhttp_parse_form_urlencoded_post(evhttp_request* req, struct evkeyvalq* vars) {
+        // fetch the post body into a vector<char>
+        evbuffer* postbody = evhttp_request_get_input_buffer(req);
+        size_t postlen = evbuffer_get_length(postbody);
+        std::vector<char> buf(postlen+1, '\0');
+        evbuffer_remove(postbody, &buf.front(), postlen);
+        return evhttp_parse_query_str(&buf.front(), vars);
     }
 }
 #endif

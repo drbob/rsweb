@@ -6,7 +6,6 @@ if(poll_cb) poll_cb();
 
 **/
 
-
 Date.prototype.toISO8601 = function () {
     d = this;
     function pad(n){
@@ -199,16 +198,16 @@ RS.UI = {
         txt = RS.UI.Markdown.makeHtml(txt); 
         var dt = $('<dt/>');
         var dd = $('<dd/>');
+        
         var last_sender = tab.find('dt > .rs-ident-label').last();
+        var msgclass = 'change-speaker';
         // msg is from same as the last person
         if(last_sender.length && last_sender.hasClass('rs-ssl-id_' + msg.from)) {
-            dt.append(when).addClass('same-speaker'); 
-            dd.append(txt);
-        } else {
-            dt.append(who).append(when).addClass('change-speaker'); 
-            dd.append(txt);
+            msgclass = 'same-speaker';
         }
-
+        
+        dt.append(who).append(when).addClass(msgclass); 
+        dd.append(txt);
         dt.appendTo(tab);
         dd.appendTo(tab);
     },

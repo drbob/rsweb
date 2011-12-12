@@ -17,6 +17,7 @@ namespace rsweb {
             std::string path(evhttp_uridecode(evhttp_uri_get_path(uri), 0, NULL));
 
             if(boost::starts_with(path, "/profile")) return req;
+            else if(boost::starts_with(path, "/identity/create")) return req;
             else if(boost::starts_with(path, "/static")) return req;
             else ep_http_500(req);
             return NULL;
