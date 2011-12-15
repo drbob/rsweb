@@ -1,0 +1,11 @@
+prefix=../../retroshare/trunk/libretroshare
+exec_prefix=${prefix}
+libdir=${exec_prefix}/src/lib
+includedir=${prefix}/src
+
+Name: libretroshare
+Description: Retroshare library.
+Version: 0.0.0
+Libs: -L${libdir} -lretroshare
+Cflags: -I${includedir}
+Requires: openssl libgpgme libminiupnpc gnome-keyring-1 

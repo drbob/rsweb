@@ -1,0 +1,10 @@
+prefix=../../retroshare/trunk/libbitdht
+exec_prefix=${prefix}
+libdir=${exec_prefix}/src/lib
+includedir=${prefix}/src
+
+Name: libbitdht
+Description: Retroshare DHT library.
+Version: 0.0.0
+Libs: -L${libdir} -lbitdht
+Cflags: -I${includedir}

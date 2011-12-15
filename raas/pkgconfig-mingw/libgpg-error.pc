@@ -1,0 +1,11 @@
+prefix=../../libgpg-error-1.7
+exec_prefix=${prefix}
+libdir=${exec_prefix}/src/.libs
+includedir=${prefix}/src
+
+Name: libgpg-error
+Description: GPG Error Parsing Library
+Version: 0.1.7
+Libs: -L${libdir} -lgpg-error
+Cflags: -I${includedir}
+

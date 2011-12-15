@@ -1,12 +1,12 @@
-prefix=/usr
+prefix=../../openssl-1.0.0e
 exec_prefix=${prefix}
-libdir=${exec_prefix}/lib/x86_64-linux-gnu
+libdir=${exec_prefix}
 includedir=${prefix}/include
 
 Name: OpenSSL
 Description: Secure Sockets Layer and cryptography libraries and tools
 Version: 1.0.0e
 Requires: 
-Libs: -L${libdir} -lssl -lcrypto
+Libs: -L${libdir} -lssl -lcrypto -mconsole
 Libs.private: -ldl -Wl,-Bsymbolic-functions -lz
 Cflags: -I${includedir} 

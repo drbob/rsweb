@@ -1,0 +1,12 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libgpgme
+Description: GPG interface library
+Version: 0.0.0
+Requires: libgpg-error
+Libs: -L${libdir} -lgpgme
+Cflags: -I${includedir}
+

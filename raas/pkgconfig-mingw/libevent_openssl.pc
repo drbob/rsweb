@@ -1,6 +1,6 @@
 #libevent pkg-config source file
 
-prefix=/usr
+prefix=/
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include

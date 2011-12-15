@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libminiupnpc
+Description: Mini UPnP Client
+Version: 0.0.0
+Requires: libupnp 
+Libs: -L${libdir} -lminiupnpc
+Cflags:-I${includedir}

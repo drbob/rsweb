@@ -2,11 +2,39 @@ AC_INIT([raas], [0.0])
 AC_CONFIG_SRCDIR([configure.ac])
 AC_CONFIG_AUX_DIR([../boost.m4/build-aux])
 AM_INIT_AUTOMAKE([1.10 foreign color-tests subdir-objects parallel-tests -Wall])
-AC_CONFIG_HEADERS([config.h])    
 AC_PROG_CC                      
 AC_PROG_CXX
+AM_PROG_CC_C_O
 AC_PROG_LIBTOOL
+AC_CONFIG_HEADERS([config.h]) 
 AC_CONFIG_FILES([Makefile])
+
+AC_MSG_CHECKING(for WIN32)
+AC_TRY_COMPILE(,
+	[
+#if defined(_WIN32) || defined(WIN32)
+#else
+#error Probably not Windows.
+#endif
+	],
+	BUILD_WIN32=true; AC_MSG_RESULT(yes),
+	BUILD_WIN32=false; AC_MSG_RESULT(no),
+)
+AM_CONDITIONAL(BUILD_WIN32, test x$BUILD_WIN32 = xtrue)
+
+if test x$BUILD_WIN32 = xtrue; then
+export PKG_CONFIG_PATH="$PKG_CONFIG_PATH;./pkgconfig-mingw"
+PKG_CHECK_MODULES([DEPS], [openssl, QtCore >= 4, libminiupnpc,
+						   libevent, libgpgme, libgpg-error,
+						   libretroshare, libbitdht
+                           jansson, gio-2.0])
+else
+export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./pkgconfig-default"
+PKG_CHECK_MODULES([DEPS], [openssl, QtCore >= 4, libminiupnpc,
+                           libevent, libevent_pthreads,
+						   libretroshare, libbitdht, libgpgme, libgpg-error,
+                           jansson, gio-2.0])
+fi
 
 BOOST_REQUIRE
 BOOST_SYSTEM
@@ -14,33 +42,5 @@ BOOST_FILESYSTEM
 BOOST_THREADS
 BOOST_REGEX
 BOOST_STRING_ALGO
-
-PKG_CHECK_MODULES([DEPS], [openssl, QtCore >= 4, libupnp,
-                           libevent, libevent_pthreads, gnome-keyring-1,
-                           jansson, gio-2.0])
-
-
-AC_ARG_WITH([libretroshare-include-path],
-            [AS_HELP_STRING([--with-libretroshare-include-path],
-                            ['location of libretroshare source'])],
-            [RS_CFLAGS="-I$withval/src"],
-            [RS_CFLAGS='-I../../retroshare/trunk/libretroshare/src'])
-AC_SUBST([RS_CFLAGS])
-
-AC_ARG_WITH([libretroshare-lib-path],
-            [AS_HELP_STRING([--with-libretroshare-lib-path],
-                            ['location of libretroshare build dir'])],
-            [RS_LIBS="$withval"],
-            [RS_LIBS='../../retroshare/trunk/libretroshare/src/lib/libretroshare.a'])
-AC_SUBST([RS_LIBS])
-
-AC_ARG_WITH([libbitdht-lib-path],
-            [AS_HELP_STRING([--with-libbitdht-lib-path],
-                            ['location of libbitdht build dir'])],
-            [DHT_LIBS="$withval"],
-            [DHT_LIBS='../../retroshare/trunk/libbitdht/src/lib/libbitdht.a'])
-AC_SUBST([DHT_LIBS])
-
-
 
 AC_OUTPUT

@@ -1,0 +1,11 @@
+prefix=/
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libminiupnpc
+Description: Mini UPnP Client
+Version: 0.0.0
+Libs: -mthreads  -L${libdir} -lminiupnpc
+Cflags: -mthreads -I${includedir}
+

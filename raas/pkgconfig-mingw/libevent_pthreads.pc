@@ -1,6 +1,6 @@
 #libevent pkg-config source file
 
-prefix=/usr
+prefix=/
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
@@ -12,5 +12,5 @@ Requires: libevent
 Conflicts:
 Libs: -L${libdir} -levent_pthreads
 Libs.private: -lrt  
-Cflags: -I${includedir} -pthread
+Cflags: -I${includedir} -mthreads
 
