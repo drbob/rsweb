@@ -1,0 +1,11 @@
+prefix=/home/alexs/code/retroshare/rsweb/openssl-0.9.8r
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: OpenSSL
+Description: Secure Sockets Layer and cryptography libraries
+Version: 0.9.8r
+Requires: 
+Libs: -L${libdir} -lssl -lcrypto -ldl -lz
+Cflags: -I${includedir} 

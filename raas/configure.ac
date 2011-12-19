@@ -22,15 +22,20 @@ AC_TRY_COMPILE(,
 )
 AM_CONDITIONAL(BUILD_WIN32, test x$BUILD_WIN32 = xtrue)
 
+# the PKG_CONFIG_PATH export seems to lead to pkg.m4 not being able
+# to actually find pkg-config so we explicitly set a path for it
+# this has the unfortuante side effect of overriding the external
+# env value :(
+PKG_CONFIG=$(which pkg-config)
 if test x$BUILD_WIN32 = xtrue; then
-export PKG_CONFIG_PATH="$PKG_CONFIG_PATH;./pkgconfig-mingw"
-PKG_CHECK_MODULES([DEPS], [openssl, QtCore >= 4, libminiupnpc,
+export PKG_CONFIG_PATH="$PKG_CONFIG_PATH;./pkgconfig-mingw;../build-env/lib/pkgconfig"
+PKG_CHECK_MODULES([DEPS], [openssl = 0.9.8r, QtCore >= 4, libminiupnpc,
 						   libevent, libgpgme, libgpg-error,
 						   libretroshare, libbitdht
                            jansson, gio-2.0])
 else
-export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./pkgconfig-default"
-PKG_CHECK_MODULES([DEPS], [openssl, QtCore >= 4, libminiupnpc,
+export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./pkgconfig-default:../build-env/lib/pkgconfig"
+PKG_CHECK_MODULES([DEPS], [openssl = 0.9.8r, QtCore >= 4, libminiupnpc,
                            libevent, libevent_pthreads,
 						   libretroshare, libbitdht, libgpgme, libgpg-error,
                            jansson, gio-2.0])
@@ -41,6 +46,7 @@ BOOST_SYSTEM
 BOOST_FILESYSTEM
 BOOST_THREADS
 BOOST_REGEX
+BOOST_BIND
 BOOST_STRING_ALGO
 
 AC_OUTPUT
