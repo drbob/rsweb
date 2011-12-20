@@ -1,6 +1,6 @@
 [submodule "boost.m4"]
 	path = boost.m4
-	url = https://github.com/tsuna/boost.m4.git
+	url = git@github.com:public/boost.m4.git
 [submodule "jansson"]
 	path = jansson
 	url = https://github.com/akheron/jansson.git
