@@ -26,6 +26,7 @@ raas/libtool
 .dirstamp
 *.Po
 config.log
+.sass-cache
 
 ## Below here is general wild card stuff we probably don't want ##
 
