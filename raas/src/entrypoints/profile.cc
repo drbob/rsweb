@@ -4,7 +4,6 @@
 #include <list>
 #include <string>
 #include <boost/foreach.hpp>
-#include <boost/range/adaptor/map.hpp>
 
 #include <retroshare/rsiface.h> 
 #include <retroshare/rsinit.h>
@@ -75,9 +74,10 @@ namespace rsweb {
         };
 
         // read them out of libevent
-        BOOST_FOREACH(const char* key, form_vars | boost::adaptors::map_keys) {
-            const char* c_value = evhttp_find_header(&vars, key);
-            form_vars[key] = c_value ? c_value : "";
+        for(std::map<const char*, std::string>::iterator iter = form_vars.begin();
+                iter != form_vars.end(); ++iter) {
+            const char* c_value = evhttp_find_header(&vars, iter->first);
+            form_vars[iter->first] = c_value ? c_value : "";
         }
 
         // try and generate the new location profile
@@ -111,11 +111,12 @@ namespace rsweb {
         };
 
         // read them out of libevent
-        BOOST_FOREACH(const char* key, form_vars | boost::adaptors::map_keys) {
-            const char* c_value = evhttp_find_header(&vars, key);
-            std::cerr << key << " = " << form_vars[key] << " = '" << c_value <<  "'" << std::endl;
-            form_vars[key] = std::string(c_value ? c_value : "");
+        for(std::map<const char*, std::string>::iterator iter = form_vars.begin();
+                iter != form_vars.end(); ++iter) {
+            const char* c_value = evhttp_find_header(&vars, iter->first);
+            form_vars[iter->first] = std::string(c_value ? c_value : "");
         }
+        // read them out of libevent
 
         // try and generate the pgp key
         std::string pgp_id, error;

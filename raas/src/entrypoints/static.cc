@@ -6,7 +6,6 @@
 #include <boost/algorithm/string.hpp>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <magic.h>
 
 namespace rsweb {
 
