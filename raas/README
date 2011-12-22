@@ -21,4 +21,39 @@ autoreconf -fvi
 make
 ./raas
 
+Compiling: MinGW/MSYS
+---------------------
+
+Install a full MinGW/MSYS environment
+
+http://www.mingw.org/wiki/MSYS
+
+Install a fancier MinGW distro over the top that has binaries for things like Boost already
+
+http://nuwen.net/mingw.html
+
+Install pkg-config and gettext from here
+
+http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/
+
+Install glib from here
+
+http://ftp.gnome.org/pub/gnome/binaries/win32/glib/
+
+Install and compile libevent2
+
+http://libevent.org/
+
+./configure --enable-static --disable-shared
+
+If must *not* user GCC from MSYS. It's old and crappy. You should also not use libtool from MinGW.
+
+There are probably also some other MSYS things you really don't want to use.
+
+If things aren't working properly, make sure you have things installed in the right places. You'll probably want to mingw-get remove a few MSYS libraries to get your environment
+tidy.
+
+
+
+
 

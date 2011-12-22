@@ -1,8 +1,8 @@
 #ifndef RSWEB_ENTRYPOINT_HELPER
 #define RSWEB_ENTRYPOINT_HELPER
 
-#include <event2/buffer.h>
 #include <event2/event.h>
+#include <event2/buffer.h>
 #include <event2/keyvalq_struct.h>
 #include <event2/http.h>
 #include <list>
@@ -13,7 +13,7 @@
 #include <jansson.h>
 #include <QString>
 #include <boost/regex.hpp>
-
+#include <boost/bind.hpp>
 
 #include <retroshare/rspeers.h>
 #include <retroshare/rsmsgs.h>
@@ -80,14 +80,16 @@ namespace rsweb {
     static entrypoint_matcher_template<std::equal_to<std::string>> entrypoint_eq;
     static entrypoint_rx_type entrypoint_rx;
 
-    static int json_dump_evbuffer(json_t* json, evbuffer* eb, int flags=0) {
-        return json_dump_callback(json,
-                ([](const char* b, size_t n, void* d){
-                 return evbuffer_add((evbuffer*)d, b, n);
-                 }),
-                eb, flags);
+    static int json_dump_evbuffer_add_callback(const char* b, size_t n, void* d) {
+        return evbuffer_add((evbuffer*)d, b, n);
     }
     
+    static int json_dump_evbuffer(json_t* json, evbuffer* eb, int flags=0) {
+        return json_dump_callback(json,
+                json_dump_evbuffer_add_callback,
+                eb, flags);
+    }
+
     static std::string& wstring_to_utf8_string(const std::wstring& src, std::string& dest) {
         return dest = std::string(QString::fromWCharArray(src.c_str(), src.size()).toUtf8().data());
     }

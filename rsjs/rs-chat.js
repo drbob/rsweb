@@ -20,7 +20,8 @@ Date.prototype.toISO8601 = function () {
 }
 
 var RS = {
-    root_url: "http://localhost:10101"
+// FIXME: deduce this from window.location?
+root_url: "http://localhost:10101"
 };
 
 RS.Chat = {
@@ -218,34 +219,66 @@ RS.UI = {
         $('.__rs-chat-incoming').trigger('RS.Chat.incoming', [room, queue]);
     },
 
-    // IDENT STUFF ////////////////////////////////////////////////////////////////////////////////////////
+    // IDENT STUFF /////////////////////////////////////////
 
     ident_label: function(el, ident) {
-        ident = jQuery.extend({name: 'Unknown',
-            connect_state: 0,
-            gpg_id: 'None',
-        }, ident);
+        if(!el.hasClass('rs-ident-label')) {
+            ident = jQuery.extend({name: 'Unknown',
+                connect_state: 0,
+                gpg_id: 'None',
+            }, ident);
 
-        if(ident != undefined && ident.name != undefined) {
-            el.text(ident.name);
-        } else {
-            el.text("Unknown");
-        }
-        if(ident['connect_state'] & 0x4) {
-            el.removeClass('offline');
-            el.addClass('online');
-        } else {
-            el.removeClass('online');
-            el.addClass('offline');
+            if(ident != undefined && ident.name != undefined) {
+                el.text(ident.name);
+            } else {
+                el.text("Unknown");
+            }
+
+            if(ident['connect_state'] & 0x4) {
+                el.removeClass('offline');
+                el.addClass('online');
+            } else {
+                el.removeClass('online');
+                el.addClass('offline');
+            }
+
+            el.addClass('rs-ssl-id_' + ident['id']);
+            el.addClass('rs-ident-label');
+
+            el.attr('title', ident['gpg_id'] + '/' + ident['id']);
+
+            el.draggable({
+                revert: 'invalid',
+            });
+            el.parent().draggable({
+                connectToSortable: '#friend_list'
+            });
+            // add a click handler that will pop up
+            // a panel to allow editing of trust relationships
+            // with people you already know
+            console.log('click');console.log(el);
+            el.click(RS.UI.ident_edit_panel);
         }
 
-        el.addClass('rs-ssl-id_' + ident['id']);
-        el.addClass('rs-ident-label');
-        
-        el.attr('title', ident['gpg_id'] + '/' + ident['id']);
-        
         el.data('rs-identity', ident);
         return el; 
+    },
+
+    ident_edit_panel: function() {
+    console.log(this);
+        self = $(this);
+        var pop = self.parent().find('.pop-out-panel');
+        if(pop.length == 0) {
+            pop = RS.UI.template('#ident_edit_panel_template').hide().insertAfter(self);
+        } 
+        pop.toggle(200);
+    },
+
+
+    template: function(selector) {
+        var tpl = $(selector).clone();
+        tpl.show();
+        return tpl;
     },
 
     trigger_ident_change: function(oldlist, newlist) {
@@ -267,7 +300,7 @@ RS.UI = {
     */
     friend_list: function (elem) { 
         elem = $(elem);
-
+        elem.sortable();
         elem.addClass('__rs-identities-update');
         elem.bind('RS.Identities.update', function(ev, oldlist, newlist) {
             jQuery.each(newlist, function(i, ident) {

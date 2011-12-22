@@ -1,6 +1,9 @@
 
 ## included 3rd party projects we should ignored
 pagedown/*
+build-env/*
+threadpool*
+openssl*
 
 # things RAAS generates that we dont want in git
 raas/raas

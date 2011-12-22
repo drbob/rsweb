@@ -1,9 +1,11 @@
 #include "file_share.h"
+#include "../http_errors.h"
 #include "../entrypoint.h"
 #include <retroshare/rspeers.h>
 #include <retroshare/rsforums.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
 namespace rsweb {
 
 void ep_forum_index(evhttp_request* req) {
@@ -11,7 +13,7 @@ void ep_forum_index(evhttp_request* req) {
     rsForums->getForumList(forum_list);
     
     auto json_forum_list = json_array();
-    for(ForumInfo& f : forum_list) {
+    BOOST_FOREACH(ForumInfo& f, forum_list) {
         auto forum_json = json_object();
         json_object_set_new(forum_json, "id", json_string(f.forumId.c_str()));
         json_object_set_new(forum_json, "flags", json_integer(f.forumFlags));
@@ -208,7 +210,5 @@ void ep_forum_thread(evhttp_request* req) {
         ep_forum_thread_POST(req);
     }
 }
-
-
 
 };

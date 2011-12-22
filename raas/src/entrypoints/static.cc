@@ -1,4 +1,5 @@
 #include "../entrypoint.h"
+#include "../http_errors.h"
 #include <retroshare/rspeers.h>
 #include <retroshare/rsmsgs.h>
 #include <boost/filesystem.hpp>

@@ -1,9 +1,11 @@
 #include "file_share.h"
 #include "../entrypoint.h"
+#include "../http_errors.h"
 #include <retroshare/rspeers.h>
 #include <retroshare/rsfiles.h>
 #include <retroshare/rstypes.h>
 #include <boost/algorithm/string.hpp>
+#include <boost/foreach.hpp>
 namespace rsweb {
 
 
@@ -36,11 +38,11 @@ void ep_file_share_browse(evhttp_request* req) {
     rsFiles->RequestDirDetails(uid, "", dir);
     
     // walk down the path stack to the desired dir
-    for(std::string& part : path_parts) {
+    BOOST_FOREACH(std::string& part, path_parts) {
         // find the desired ref at this depth
         rsFiles->RequestDirDetails(ref, dir, 0);
         ref = NULL;
-        for(DirStub& s : dir.children) {
+        BOOST_FOREACH(DirStub& s, dir.children) {
             if(s.name == part) {
                 ref = s.ref;
                 break;
@@ -78,7 +80,7 @@ void __output_DirDetails_DIR_as_json(evhttp_request* req, void* ref, json_t* jro
     DirDetails dir;
     rsFiles->RequestDirDetails(ref, dir, 0);
     auto json_folder_list = json_array();
-    for(DirStub& s : dir.children) {
+    BOOST_FOREACH(DirStub& s, dir.children) {
         auto json_dentry = json_object();
         json_object_set_new(json_dentry, "name", json_string(s.name.c_str()));
         json_object_set_new(json_dentry, "type", json_integer(s.type));

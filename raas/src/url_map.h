@@ -38,10 +38,19 @@ namespace rsweb {
         entrypoint_rx("^/identities$",
                 ep_friends), 
 
+        // modify trust relationship with a given identity
+        entrypoint_rx("^/friend/edit$",
+                ep_friend_edit),
+
+        // modify trust relationship with a given identity
+        entrypoint_rx("^/friend/add$",
+                ep_friend_add),
+
+        // {{{
         // lists available profiles and gpg identities
         entrypoint_rx("^/(my/)?profiles$",
                 ep_profile_list),
-        
+
         // displays the active profile
         entrypoint_rx("^/(my/)?profile/active$",
                 ep_profile_active),
@@ -58,12 +67,14 @@ namespace rsweb {
         // RS profile in the URL using the password provided
         entrypoint_rx("^/(my/)?profile/activate$",
                 ep_profile_activate),
-
+        // }}}
+        
         // only for browsing files
         // downloads must be initiated explicitly
         entrypoint_rx("^(?<_>/file_sharing/)(?<uid>[a-f0-9]{32,40})",
                 ep_file_share_browse),
 
+        // {{{
         // returns a list of all known forums and some info about them
         entrypoint_rx("^/forums$",
                 ep_forum_index),
@@ -77,10 +88,10 @@ namespace rsweb {
 
         // creates a new empty forum, only useful via POST
         entrypoint_rx("^/forum/create",
-                ep_forum_create)
-
-            //entrypoint_rx("^(?<_>/transfers/)(?<uid>[a-f0-9]{32,40})", ep_file_transfers),
-            //entrypoint_rx("^/forum/)", ep_forum_view),
+                ep_forum_create),
+        // }}}
+        //entrypoint_rx("^(?<_>/transfers/)(?<uid>[a-f0-9]{32,40})", ep_file_transfers),
+        //entrypoint_rx("^/forum/)", ep_forum_view),
     };
 }
 #endif

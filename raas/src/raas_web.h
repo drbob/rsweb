@@ -13,6 +13,7 @@
 #include "entrypoint.h"
 #include "middleware.h"
 #include "middleware_seq.h"
+#include "http_errors.h"
 
 namespace rsweb {
 typedef boost::threadpool::pool thread_pool;

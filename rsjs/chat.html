@@ -16,11 +16,13 @@
             RS.UI.friend_list($('#friend_list'));
             RS.UI.chat_input($('#chat_input'));
             RS.UI.tabbed_chat_output($("#chat_output"));
+            $("#add_friends").click(RS.UI.popup_overlay(RS.UI.add_friends_form()));;
 
             RS.Identities.monitor_known_idents(RS.UI.trigger_ident_change);
             RS.Chat.monitor_chat_queues(RS.UI.trigger_chat_incoming);
             });</script>
         <link rel="stylesheet" type="text/css" href="style.css" />
+        <style> .template { display: none; } </style>
     </head>
     <body>
         <h1>Chat</h1>
@@ -31,7 +33,25 @@
             <textarea name="msg"></textarea>
             <input type="submit" value="Send" />
         </form>
-        <ol id="friend_list">
-        </ol>
+
+        <div id="right">
+            <input type="button" value="Add Friends" id="add_friends" />
+
+            <ol id="friend_list">
+                <div id="ident_edit_panel_template"
+                    class="pop-out-panel template">
+                    <form method="POST" action="/friend/edit">
+                        <label> Trust: <select name="trust_lvl">
+                                <option value="2">None</option>
+                                <option value="3">Marginal</option>
+                                <option value="4">Full</option>
+                                <option value="5">Ultimate</option>
+                            </select>
+                        </label>
+                        <input type="submit" value="Change" />
+                    </form>
+                </div> 
+            </ol>
+        </div>
     </body>
 </html>

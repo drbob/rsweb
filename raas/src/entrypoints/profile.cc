@@ -8,6 +8,7 @@
 
 #include <retroshare/rsiface.h> 
 #include <retroshare/rsinit.h>
+#include <retroshare/rsconfig.h>
 #include <util/rsrandom.h>
 #include <pqi/authgpg.h>  
 
@@ -104,9 +105,9 @@ namespace rsweb {
 
         // define expected vars
         std::map<const char*, std::string> form_vars = { 
-            {"name", "HERF"},
-            {"email", "DURF"},
-            {"password", "DERP"}
+            {"name", ""},
+            {"email", ""},
+            {"password", ""}
         };
 
         // read them out of libevent
@@ -115,8 +116,6 @@ namespace rsweb {
             std::cerr << key << " = " << form_vars[key] << " = '" << c_value <<  "'" << std::endl;
             form_vars[key] = std::string(c_value ? c_value : "");
         }
-
-        std::cerr << form_vars["name"] << " / " << form_vars["email"] << " / " << form_vars["password"] << std::endl;
 
         // try and generate the pgp key
         std::string pgp_id, error;
@@ -132,7 +131,7 @@ namespace rsweb {
         } else {
             json_object_set_new(jroot, "error", json_string(error.c_str()));
         }
-
+        
         evhttp_send_json_reply(req, jroot); 
     }
 
@@ -156,31 +155,38 @@ namespace rsweb {
         evhttp_parse_query_str(&buf.front(), &head);
 
         const char* profile_cstr = evhttp_find_header(&head, "profile");
+        const char* password_cstr = evhttp_find_header(&head, "password");
         std::string acc_id = profile_cstr ? profile_cstr : "";
+        std::string password = password_cstr ? password_cstr : "";
         std::string errstr = "Malformed activation request or profile already active";
 
         if(rsweb::rs_control_startup_retroshare_called == false && !acc_id.empty()) {
             std::string gpgId, gpgName, gpgEmail, sslName;
-            if (RsInit::getAccountDetails(acc_id, gpgId, gpgName, gpgEmail, sslName)) {
+            if (RsInit::getAccountDetails(acc_id,
+                                          gpgId, gpgName, gpgEmail, sslName)) {
+                
                 RsInit::SelectGPGAccount(gpgId);
-            }
+                std::cout << "LOADPASSWORD " << acc_id << " pw: " << password << std::endl;
+                // this actually causes account selection
+                RsInit::LoadPassword(acc_id, "");
 
-            std::string error_string;
-            int retVal = RsInit::LockAndLoadCertificates(false, error_string);
-            if(retVal == 1) {
-                errstr = "Another instance of retroshare is already using this profile";
-            } else if(retVal == 2) {
-                errstr = "An unexpected error occurred while locking the profile";
-            } else if(retVal == 2) {
-                errstr = "An error occurred while login with the profile";
-            } else if(retVal != 0) {
-                errstr = "Unknown error while loading certificates";
-            } else {
-                errstr = "";
-            }
+                std::string error_string;
+                int retVal = RsInit::LockAndLoadCertificates(false, error_string);
+                if(retVal == 1) {
+                    errstr = "Another instance of retroshare is already using this profile";
+                } else if(retVal == 2) {
+                    errstr = "An unexpected error occurred while locking the profile";
+                } else if(retVal == 2) {
+                    errstr = "An error occurred while login with the profile";
+                } else if(retVal != 0) {
+                    errstr = "Unknown error while loading certificates";
+                } else {
+                    errstr = "";
+                }
 
-            rsweb::rs_control->StartupRetroShare();
-            rsweb::rs_control_startup_retroshare_called = true;
+                rsweb::rs_control->StartupRetroShare();
+                rsweb::rs_control_startup_retroshare_called = true;
+            }
         }
 
         auto jroot = json_object();

@@ -1,3 +1,4 @@
+
 /* Solarized stuff */
 $base03:    #002b36;
 $base02:    #073642;
@@ -137,7 +138,8 @@ body > h1 {
     font-size: 0.8rem;
 }
 
-#friend_list {
+
+#right {
     display: inline-block;
     float: right;
     position: absolute;
@@ -148,9 +150,12 @@ body > h1 {
     width: 15%;
     max-width: 15%;
     border:0;
-    margin: 0;
-    padding: 1em 0 0 2em;
     border-left: 1rem solid $base03;
+    margin: 0;
+}
+
+#friend_list {
+    padding: 1em 0 0 2em;
 }
 
 .rs-ident-label {

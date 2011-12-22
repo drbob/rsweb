@@ -9,7 +9,8 @@
             jQuery.getJSON('/profiles', function(data, status, xhr) {
                 $('select.profile_list').each(function(i, elem) {
                     jQuery.each(data['profiles'], function(i, v) {
-                        var option = $('<option/>').attr('value', i).text(v["location"] + 
+                        var option = $('<option/>').attr('value', i).text(
+                        v["location"] + 
                         " (" + v["name"] +
                         " <" + v["email"] + ">" +
                         ")"
@@ -37,6 +38,7 @@
         <h1>Connect</h1>
         <form method="POST" action="/profile/activate">
             <label>Profile: <select name="profile" class="profile_list"></select></label>
+            <label>Password: <input type="password" name="password"></label>
             <input type="submit" value="Login">
         </form>
 

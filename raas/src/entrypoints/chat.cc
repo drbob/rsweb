@@ -2,6 +2,7 @@
 #include <retroshare/rspeers.h>
 #include <retroshare/rsmsgs.h>
 #include <boost/algorithm/string.hpp>
+#include <boost/foreach.hpp>
 
 
 
@@ -36,11 +37,11 @@ void ep_im_chat_GET(evhttp_request* req) {
     }
 
     auto json_chats = json_object();
-    for(std::string& id : active_chats) {
+    BOOST_FOREACH(std::string& id, active_chats) {
         std::list<ChatInfo> chat_queue;
         auto json_chat_messages = json_array();
         rsMsgs->getPrivateChatQueue(true, id, chat_queue);
-        for(ChatInfo& chat : chat_queue) {
+        BOOST_FOREACH(ChatInfo& chat, chat_queue) {
             auto json_msg = serialize_ChatInfo_to_json(chat);
             json_array_append_new(json_chat_messages, json_msg);
         }
@@ -58,7 +59,7 @@ void ep_im_chat_GET(evhttp_request* req) {
         std::list<ChatInfo> chat_queue;
         rsMsgs->getPublicChatQueue(chat_queue);
         json_t* json_chat_messages = json_array();
-        for(ChatInfo& chat : chat_queue) {
+        BOOST_FOREACH(ChatInfo& chat, chat_queue) {
             // FIXME: filter out messages that we sent
             json_array_append_new(json_chat_messages, serialize_ChatInfo_to_json(chat));
         }
@@ -127,7 +128,7 @@ void ep_im_waiting(evhttp_request* req) {
     rsMsgs->getPrivateChatQueueIds(true, active_chats);
 
     auto json_chats = json_object();
-    for(std::string& id : active_chats) {
+    BOOST_FOREACH(std::string& id, active_chats) {
         std::list<ChatInfo> chat_queue;
         auto json_chat_messages = json_array();
         rsMsgs->getPrivateChatQueue(true, id, chat_queue);
@@ -142,7 +143,7 @@ void ep_global_chat_GET(evhttp_request* req) {
     rsMsgs->getPublicChatQueue(chat);
 
     auto json_messages = json_array();
-    for(ChatInfo& msg : chat) {
+    BOOST_FOREACH(ChatInfo& msg, chat) {
         json_t* json_msg = serialize_ChatInfo_to_json(msg);
         json_array_append_new(json_messages, json_msg);
     }

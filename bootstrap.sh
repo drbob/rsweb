@@ -25,6 +25,7 @@ hg clone https://code.google.com/p/pagedown/ || (cd pagedown && hg pull && hg up
 
 wget http://freefr.dl.sourceforge.net/project/threadpool/threadpool/0.2.5%20%28Stable%29/threadpool-0_2_5-src.zip
 unzip threadpool-0_2_5-src.zip
+mv threadpool-0_2_5 threadpool
 cd threadpool
 cp -vR boost "$PREFIX/include"
 cd ../
