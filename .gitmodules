@@ -7,3 +7,6 @@
 [submodule "pure"]
 	path = pure
 	url = https://github.com/pure/pure.git
+[submodule "OpenPGP-SDK"]
+	path = OpenPGP-SDK
+	url = git@github.com:public/OpenPGP-SDK.git
