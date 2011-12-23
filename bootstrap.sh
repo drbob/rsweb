@@ -23,13 +23,6 @@ make install
 cd ../
 hg clone https://code.google.com/p/pagedown/ || (cd pagedown && hg pull && hg update && cd ../)
 
-wget http://freefr.dl.sourceforge.net/project/threadpool/threadpool/0.2.5%20%28Stable%29/threadpool-0_2_5-src.zip
-unzip threadpool-0_2_5-src.zip
-mv threadpool-0_2_5 threadpool
-cd threadpool
-cp -vR boost "$PREFIX/include"
-cd ../
-
 wget https://www.openssl.org/source/openssl-0.9.8r.tar.gz
 tar -zxvf openssl-0.9.8r.tar.gz
 cd ../openssl-0.9.8r

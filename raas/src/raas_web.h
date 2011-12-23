@@ -4,10 +4,13 @@
 #include <queue>
 #include <string>
 #include <list>
+#include <functional>
 #include <iostream>
 #include <assert.h>
-#include <boost/threadpool.hpp>
 #include <boost/bind.hpp>
+
+#include <QThread>
+#include <QThreadPool>
 
 #include "url_map.h"
 #include "entrypoint.h"
@@ -16,7 +19,14 @@
 #include "http_errors.h"
 
 namespace rsweb {
-typedef boost::threadpool::pool thread_pool;
+
+typedef QThreadPool thread_pool;
+
+thread_pool& get_thread_pool(int nthreads=0) {
+    QThreadPool& tp = *QThreadPool::globalInstance();
+    tp.setMaxThreadCount(std::max(nthreads, QThread::idealThreadCount()));
+    return tp;
+}
 
 void request_router(evhttp_request* req) {
     const struct evhttp_uri* url = evhttp_request_get_evhttp_uri(req);
@@ -45,11 +55,22 @@ void request_router(evhttp_request* req) {
     ep_http_404(req);
 }
 
+class QRunnable_adaptor : public QRunnable {
+    typedef std::function<void ()> func_type;
+    func_type func;
+
+    public:
+    QRunnable_adaptor(func_type f) : func(f) {};
+    void run() { func(); }
+};
+
 void queue_request(struct evhttp_request* r, void* arg) {
+    assert(r); assert(arg);
     thread_pool* tp = static_cast<thread_pool*>(arg);
-    assert(tp); assert(r);
+    assert(tp);
+
     // delay the actual routing of the request until a thread is available
-    tp->schedule(boost::bind(request_router, r)); 
+    tp->start(new QRunnable_adaptor (boost::bind(request_router, r)));
 }
 
 }

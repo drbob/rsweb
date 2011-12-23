@@ -1,5 +1,7 @@
 ACLOCAL_AMFLAGS = -I ../boost.m4/build-aux
 
+DEPS_CFLAGS += $(WIN32_DEPS_CFLAGS)
+DEPS_LIBS += $(WIN32_DEPS_LIBS)
 
 AM_CFLAGS = $(WIN32_CFLAGS) $(DEPS_CFLAGS) -g \
             -std=c++0x -fdata-sections -ffunction-sections \
@@ -32,7 +34,7 @@ raas_SOURCES = src/raas.cc \
 			   src/entrypoints/profile.cc \
 			   src/entrypoints/forums.cc \
 			   src/middleware/check_profile.cc
-		 
+
 LIBS += $(DHT_LIBS) \
 		$(DEPS_LIBS) \
 		$(BOOST_LIBS) \

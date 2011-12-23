@@ -29,17 +29,16 @@ AM_CONDITIONAL(BUILD_WIN32, test x$BUILD_WIN32 = xtrue)
 PKG_CONFIG=$(which pkg-config)
 if test x$BUILD_WIN32 = xtrue; then
 export PKG_CONFIG_PATH="$PKG_CONFIG_PATH;./pkgconfig-mingw;../build-env/lib/pkgconfig"
-PKG_CHECK_MODULES([DEPS], [openssl = 0.9.8r, QtCore >= 4, libminiupnpc,
-						   libevent, libgpgme, libgpg-error,
-						   libretroshare, libbitdht
-                           jansson, gio-2.0])
+PKG_CHECK_MODULES([WIN32_DEPS], [])
 else
 export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./pkgconfig-default:../build-env/lib/pkgconfig"
+PKG_CHECK_MODULES([DEFAULT_DEPS], [libgpg-error])
+fi
+
 PKG_CHECK_MODULES([DEPS], [openssl = 0.9.8r, QtCore >= 4, libminiupnpc,
                            libevent, libevent_pthreads,
-						   libretroshare, libbitdht, libgpgme, libgpg-error,
+						   libretroshare, libbitdht, libgpgme,
                            jansson, gio-2.0])
-fi
 
 BOOST_REQUIRE
 BOOST_SYSTEM

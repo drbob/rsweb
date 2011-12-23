@@ -5,6 +5,8 @@
 #include <iostream>
 #include <locale>
 
+#include <QThreadPool>
+
 #include "raas.h"
 #include "raas_web.h"
 #include "notifytxt.h"
@@ -49,10 +51,9 @@ int main(int argc, char** argv) {
     // doing anything without calling this first results in a segfault
     //rsweb::rs_control->StartupRetroShare();
     
-    std::cout << "CONTROL POINTER " << rsweb::rs_control << std::endl;
+    rsweb::thread_pool& thread_pool = rsweb::get_thread_pool(); 
     
-    rsweb::thread_pool thread_pool(16); 
-
+    
     event_init();
     evthread_use_pthreads();
     event_base* evbase = event_base_new();
@@ -62,7 +63,7 @@ int main(int argc, char** argv) {
     assert(evhttp_bind_socket(http_base, "0.0.0.0", 10101) == 0);
 
     event_base_dispatch(evbase);
-    thread_pool.wait();
+    thread_pool.waitForDone();
     return 1;
 }
 
