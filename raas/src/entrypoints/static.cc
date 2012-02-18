@@ -28,7 +28,12 @@ void ep_static_files(evhttp_request* req) {
     struct evbuffer* outbuf = evhttp_request_get_output_buffer(req);
     evbuffer_add_file(outbuf, file_fd, 0, fs::file_size(fs_path)); 
 
+#if BOOST_FILESYSTEM_VERSION == 3
     const std::string filename = fs_path.filename().string();
+#else
+    const std::string filename = fs_path.filename();
+#endif
+    
     const char* mime = "text/plain";
     if(boost::ends_with(filename, ".js")) mime = "application/ecmascript";
     else if(boost::ends_with(filename, ".html")) mime = "text/html";

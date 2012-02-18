@@ -40,7 +40,7 @@ PKG_CHECK_MODULES([DEPS], [openssl = 0.9.8r, QtCore >= 4, libminiupnpc,
 						   libretroshare, libbitdht, libgpgme,
                            jansson, gio-2.0])
 
-BOOST_REQUIRE
+BOOST_REQUIRE([1.42])
 BOOST_SYSTEM
 BOOST_FILESYSTEM
 BOOST_THREADS

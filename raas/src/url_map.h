@@ -45,7 +45,8 @@ namespace rsweb {
         // modify trust relationship with a given identity
         entrypoint_rx("^/friend/add$",
                 ep_friend_add),
-
+        entrypoint_rx("^/friends/add$",
+                ep_friend_add),
         // {{{
         // lists available profiles and gpg identities
         entrypoint_rx("^/(my/)?profiles$",
@@ -71,7 +72,7 @@ namespace rsweb {
         
         // only for browsing files
         // downloads must be initiated explicitly
-        entrypoint_rx("^(?<_>/file_sharing/)(?<uid>[a-f0-9]{32,40})",
+        entrypoint_rx("^(?<_>/files/)(?<uid>[a-f0-9]{32,40})",
                 ep_file_share_browse),
 
         // {{{

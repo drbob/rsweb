@@ -256,7 +256,6 @@ RS.UI = {
             // add a click handler that will pop up
             // a panel to allow editing of trust relationships
             // with people you already know
-            console.log('click');console.log(el);
             el.click(RS.UI.ident_edit_panel);
         }
 
@@ -289,7 +288,6 @@ RS.UI = {
         jQuery.each(newlist, function (index, ident) {
             // FIXME: make a proper equals() operator for idents
             if(!(index in oldlist) || oldlist[index]['connect_state'] != ident['connect_state'])  {
-                console.log([index, index in oldlist, oldlist[index], newlist[index]]);
                 var existing = $('.rs-ssl-id_' + index);
                 existing.each(function(i){ RS.UI.ident_label($(this), ident);});
             }
@@ -317,6 +315,10 @@ RS.UI = {
         var anch = RS.UI.ident_label($("<a>"), ident);
         anch.attr('href', '#');
         return $('<li/>').append(anch).appendTo(elem);
+    },
+
+    popup_overlay: function(elem) {
+        return $(elem).dialog();
     },
 };
 

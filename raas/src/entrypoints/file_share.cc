@@ -99,9 +99,11 @@ void __output_DirDetails_DIR_as_json(evhttp_request* req, void* ref, json_t* jro
     evhttp_add_header(headers, "Content-Type", "text/plain");
     evhttp_send_reply(req, 200, "OK", resp);
     evbuffer_free(resp);
-
 }
 
+void __map_rsweb_url_to_local_file(std::string url, std::string& file_url) {
+
+}
 
 };
  

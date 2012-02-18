@@ -16,8 +16,8 @@
             RS.UI.friend_list($('#friend_list'));
             RS.UI.chat_input($('#chat_input'));
             RS.UI.tabbed_chat_output($("#chat_output"));
-            $("#add_friends").click(RS.UI.popup_overlay(RS.UI.add_friends_form()));;
-
+            $("#add_friends").click(function() { $('#add_friends_dialog').dialog(); });
+             
             RS.Identities.monitor_known_idents(RS.UI.trigger_ident_change);
             RS.Chat.monitor_chat_queues(RS.UI.trigger_chat_incoming);
             });</script>
@@ -36,7 +36,18 @@
 
         <div id="right">
             <input type="button" value="Add Friends" id="add_friends" />
+            <div id="add_friends_dialog" style="display:none" title="Add Friends">
+                <form method="POST" action="/friend/add">
+                <label>
+                    <p>
+                    Paste keys in here
+                    </p>
+                    <textarea name="cert"></textarea>
+                </label>
 
+                <input type="submit" value="Add Friends"/>
+            </form>
+            </div>
             <ol id="friend_list">
                 <div id="ident_edit_panel_template"
                     class="pop-out-panel template">

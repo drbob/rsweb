@@ -38,14 +38,3 @@ make
 make test
 make install
 
-# Uses it's own bizarro world build system that doesn't support make install
-# also needs to be made to point at the same openssl as the rest of the prohject
-# must point at the openssl source folder, not build-env because of how derped the build
-# scripts are
-cd ../OpenPGP-SDK
-./configure --without-idea --with-openssl=$(readlink -f ../openssl-$OPENSSL_VERSION)
-make
-cp -vR include/ "$PREFIX/"
-cp -vR lib/ "$PREFIX/"
-
-
